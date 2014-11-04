@@ -17,6 +17,8 @@ Dependencies
 
 Building
 ========
+
+::
     <git clone>
     cmake -g 'Unix Makefiles' .
     make
