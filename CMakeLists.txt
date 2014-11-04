@@ -1,8 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
-project (hsetroot)
+project (yawa)
 
-set(PACKAGE_NAME "hsetroot")
-set(PACKAGE_VERSION "1.0.3")
+set(PACKAGE_NAME "yawa")
+set(PACKAGE_VERSION "0.0.1")
 set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 set(PACKAGE_DESCRIPTION "yet another wallpaper application")
 set(PACKAGE_BUGREPORT "johannes@kyriasis.com")
