@@ -12,6 +12,13 @@ configure_file(
 	${CMAKE_SOURCE_DIR}/src/config.h
 )
 
+set(CMAKE_C_COMPILER             "/usr/bin/clang")
+set(CMAKE_C_FLAGS                "-Weverything")
+set(CMAKE_C_STANDARD 11)
+add_definitions(
+	-std=c11
+)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory("src")
