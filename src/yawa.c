@@ -61,7 +61,6 @@ parse_opt (int key, char *arg, struct argp_state *state)
 				fprintf(stderr, "No digits were found\n");
 				exit(-2);
 			}
-
 			break;
 		case 'c':
 			arguments->clear = true;
@@ -92,7 +91,19 @@ parse_opt (int key, char *arg, struct argp_state *state)
 			break;
 		case 'A':
 			arguments->alpha = true;
-			arguments->alpha_amount = atoi(arg);
+			val = strtol(arg, &endptr, 10);
+			arguments->alpha_amount = (int)val;
+
+			if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
+					|| (errno != 0 && val == 0)) {
+				perror("strtol");
+				exit(-2);
+			}
+
+			if (endptr == arg) {
+				fprintf(stderr, "No digits were found\n");
+				exit(-2);
+			}
 			break;
 		default:
 			return ARGP_ERR_UNKNOWN;
