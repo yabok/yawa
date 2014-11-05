@@ -354,201 +354,195 @@ main (int argc, char **argv)
 		imlib_context_set_dither (1);
 		imlib_context_set_blend (1);
 
-		alpha = 255;
+		if (arguments.alpha)
+			alpha = arguments.alpha;
+		else
+			alpha = 255;
 
-			if (modifier != NULL)
-			{
-				imlib_apply_color_modifier ();
-				imlib_free_color_modifier ();
-			}
-			modifier = imlib_create_color_modifier ();
-			imlib_context_set_color_modifier (modifier);
+		if (modifier != NULL)
+		{
+			imlib_apply_color_modifier ();
+			imlib_free_color_modifier ();
+		}
+		modifier = imlib_create_color_modifier ();
+		imlib_context_set_color_modifier (modifier);
 
-			if (arguments.alpha)
+		if (arguments.solid)
+		{
+			Color c;
+			if (parse_color (arguments.color, &c, alpha) == 0)
 			{
-				alpha = arguments.alpha;
+				fprintf (stderr, "Bad color (%s)\n", arguments.color);
+				continue;
 			}
-			if (arguments.solid)
+			imlib_context_set_color (c.r, c.g, c.b, c.a);
+			imlib_image_fill_rectangle (0, 0, width, height);
+		}
+		if (arguments.clear)
+		{
+			imlib_free_color_range ();
+			imlib_context_set_color_range (imlib_create_color_range ());
+		}
+		// TODO: Add back -addd
+		if (arguments.add)
+		{
+			for (i = 0; i < num_add_colors; i++)
 			{
 				Color c;
-				if (parse_color (arguments.color, &c, alpha) == 0)
+				if (parse_color (arguments.add_color[i], &c, alpha) == 0)
 				{
-					fprintf (stderr, "Bad color (%s)\n", arguments.color);
+					fprintf (stderr, "Bad color (%s)\n", arguments.add_color[i]);
 					continue;
 				}
 				imlib_context_set_color (c.r, c.g, c.b, c.a);
-				imlib_image_fill_rectangle (0, 0, width, height);
+				imlib_add_color_to_color_range (1);
 			}
-			if (arguments.clear)
+		}
+		if (arguments.gradient)
+		{
+			imlib_image_fill_color_range_rectangle (0, 0, width, height, arguments.angle);
+		}
+		if (arguments.fill)
+		{
+			if (load_image (Fill, arguments.image, width, height, alpha, image) == 0)
 			{
-				imlib_free_color_range ();
-				imlib_context_set_color_range (imlib_create_color_range ());
+				fprintf (stderr, "Bad image (%s)\n", arguments.image);
+				continue;
 			}
-			// TODO: Add back -add and -addd
-			if (arguments.add)
+		}
+		if (arguments.full)
+		{
+			if (load_image (Full, arguments.image, width, height, alpha, image) == 0)
 			{
-				for (i = 0; i < num_add_colors; i++)
-				{
-					Color c;
-					if (parse_color (arguments.add_color[i], &c, alpha) == 0)
-					{
-						fprintf (stderr, "Bad color (%s)\n", arguments.add_color[i]);
-						continue;
-					}
-					imlib_context_set_color (c.r, c.g, c.b, c.a);
-					imlib_add_color_to_color_range (1);
-				}
+				fprintf (stderr, "Bad image (%s)\n", arguments.image);
+				continue;
 			}
-			if (arguments.gradient)
+		}
+		if (arguments.tile)
+		{
+			if (load_image (Tile, arguments.image, width, height, alpha, image) == 0)
 			{
-				imlib_image_fill_color_range_rectangle (0, 0, width, height,
-				                                        arguments.angle);
+				fprintf (stderr, "Bad image (%s)\n", arguments.image);
+				continue;
 			}
-			if (arguments.fill)
+		}
+		if (arguments.center)
+		{
+			if (load_image (Center, arguments.image, width, height, alpha, image) == 0)
 			{
-				if (load_image (Fill, arguments.image, width, height, alpha, image) ==
-				                0)
-				{
-					fprintf (stderr, "Bad image (%s)\n", arguments.image);
-					continue;
-				}
+				fprintf (stderr, "Bad image (%s)\n", arguments.image);
+				continue;
 			}
-			if (arguments.full)
-			{
-				if (load_image (Full, arguments.image, width, height, alpha, image) ==
-				                0)
-				{
-					fprintf (stderr, "Bad image (%s)\n", arguments.image);
-					continue;
-				}
-			}
-			if (arguments.tile)
-			{
-				if (load_image (Tile, arguments.image, width, height, alpha, image) ==
-				                0)
-				{
-					fprintf (stderr, "Bad image (%s)\n", arguments.image);
-					continue;
-				}
-			}
-			if (arguments.center)
-			{
-				if (load_image (Center, arguments.image, width, height, alpha, image) ==
-				                0)
-				{
-					fprintf (stderr, "Bad image (%s)\n", arguments.image);
-					continue;
-				}
-			}
-			if (arguments.tint)
-			{
-				Color c;
-				DATA8 r[256], g[256], b[256], a[256];
-				int j;
+		}
+		if (arguments.tint)
+		{
+			Color c;
+			DATA8 r[256], g[256], b[256], a[256];
+			int j;
 
-				if (parse_color (arguments.color, &c, 255) == 0)
-				{
-					fprintf (stderr, "Bad color\n");
-					continue;
-				}
+			if (parse_color (arguments.color, &c, 255) == 0)
+			{
+				fprintf (stderr, "Bad color\n");
+				continue;
+			}
 
-				imlib_get_color_modifier_tables (r, g, b, a);
+			imlib_get_color_modifier_tables (r, g, b, a);
 
-				for (j = 0; j < 256; j++)
-				{
-					r[j] = (DATA8) (((double) r[j] / 255.0) * (double) c.r);
-					g[j] = (DATA8) (((double) g[j] / 255.0) * (double) c.g);
-					b[j] = (DATA8) (((double) b[j] / 255.0) * (double) c.b);
-				}
+			for (j = 0; j < 256; j++)
+			{
+				r[j] = (DATA8) (((double) r[j] / 255.0) * (double) c.r);
+				g[j] = (DATA8) (((double) g[j] / 255.0) * (double) c.g);
+				b[j] = (DATA8) (((double) b[j] / 255.0) * (double) c.b);
+			}
 
-				imlib_set_color_modifier_tables (r, g, b, a);
-			}
-			if (arguments.blur)
+			imlib_set_color_modifier_tables (r, g, b, a);
+		}
+		if (arguments.blur)
+		{
+			int intval;
+			if (sscanf (argv[i], "%i", &intval) == 0)
 			{
-				int intval;
-				if (sscanf (argv[i], "%i", &intval) == 0)
-				{
-					fprintf (stderr, "Bad value (%s)\n", argv[i]);
-					continue;
-				}
-				imlib_image_blur (intval);
+				fprintf (stderr, "Bad value (%s)\n", argv[i]);
+				continue;
 			}
-			if (arguments.sharpen)
+			imlib_image_blur (intval);
+		}
+		if (arguments.sharpen)
+		{
+			int intval;
+			if ((++i) >= argc)
 			{
-				int intval;
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing value\n");
-					continue;
-				}
-				if (sscanf (argv[i], "%i", &intval) == 0)
-				{
-					fprintf (stderr, "Bad value (%s)\n", argv[i]);
-					continue;
-				}
-				imlib_image_sharpen (intval);
+				fprintf (stderr, "Missing value\n");
+				continue;
 			}
-			if (arguments.contrast)
+			if (sscanf (argv[i], "%i", &intval) == 0)
 			{
-				double dblval;
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing value\n");
-					continue;
-				}
-				if (sscanf (argv[i], "%lf", &dblval) == 0)
-				{
-					fprintf (stderr, "Bad value (%s)\n", argv[i]);
-					continue;
-				}
-				imlib_modify_color_modifier_contrast (dblval);
+				fprintf (stderr, "Bad value (%s)\n", argv[i]);
+				continue;
 			}
-			if (arguments.brightness)
+			imlib_image_sharpen (intval);
+		}
+		if (arguments.contrast)
+		{
+			double dblval;
+			if ((++i) >= argc)
 			{
-				double dblval;
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing value\n");
-					continue;
-				}
-				if (sscanf (argv[i], "%lf", &dblval) == 0)
-				{
-					fprintf (stderr, "Bad value (%s)\n", argv[i]);
-					continue;
-				}
-				imlib_modify_color_modifier_brightness (dblval);
+				fprintf (stderr, "Missing value\n");
+				continue;
 			}
-			if (arguments.gamma)
+			if (sscanf (argv[i], "%lf", &dblval) == 0)
 			{
-				double dblval;
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing value\n");
-					continue;
-				}
-				if (sscanf (argv[i], "%lf", &dblval) == 0)
-				{
-					fprintf (stderr, "Bad value (%s)\n", argv[i]);
-					continue;
-				}
-				imlib_modify_color_modifier_gamma (dblval);
+				fprintf (stderr, "Bad value (%s)\n", argv[i]);
+				continue;
 			}
-			if (arguments.flipv)
+			imlib_modify_color_modifier_contrast (dblval);
+		}
+		if (arguments.brightness)
+		{
+			double dblval;
+			if ((++i) >= argc)
 			{
-				imlib_image_flip_vertical ();
+				fprintf (stderr, "Missing value\n");
+				continue;
 			}
-			if (arguments.fliph)
+			if (sscanf (argv[i], "%lf", &dblval) == 0)
 			{
-				imlib_image_flip_horizontal ();
+				fprintf (stderr, "Bad value (%s)\n", argv[i]);
+				continue;
 			}
-			if (arguments.flipd)
+			imlib_modify_color_modifier_brightness (dblval);
+		}
+		if (arguments.gamma)
+		{
+			double dblval;
+			if ((++i) >= argc)
 			{
-				imlib_image_flip_diagonal ();
+				fprintf (stderr, "Missing value\n");
+				continue;
 			}
-			if (arguments.write)
+			if (sscanf (argv[i], "%lf", &dblval) == 0)
 			{
-				imlib_save_image (argv[i]);
+				fprintf (stderr, "Bad value (%s)\n", argv[i]);
+				continue;
 			}
+			imlib_modify_color_modifier_gamma (dblval);
+		}
+		if (arguments.flipv)
+		{
+			imlib_image_flip_vertical ();
+		}
+		if (arguments.fliph)
+		{
+			imlib_image_flip_horizontal ();
+		}
+		if (arguments.flipd)
+		{
+			imlib_image_flip_diagonal ();
+		}
+		if (arguments.write)
+		{
+			imlib_save_image (argv[i]);
+		}
 
 		if (modifier != NULL)
 		{
