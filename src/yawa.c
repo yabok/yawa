@@ -16,63 +16,178 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _GNU_SOURCE
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <Imlib2.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include "config.h"
+
+#include <argp.h>
+#include <stdbool.h>
+
+typedef struct
+{
+	int r, g, b, a;
+} Color, *PColor;
 
 typedef enum
 { Full, Fill, Center, Tile } ImageMode;
 
-void
-usage (char *commandline)
+int setRootAtoms (Pixmap pixmap);
+int getHex (char c);
+int parse_color (char *arg, PColor c, int a);
+int load_image (ImageMode mode, const char *arg, int rootW, int rootH, int alpha,
+                Imlib_Image rootimg);
+
+const char *argp_program_version = "yawa 0.0.1";
+const char *argp_program_bug_address = "<johannes@kyriasis.com>";
+
+static int num_add_colors;
+struct arguments {
+	char *image;
+	char *color;
+	int angle;
+	int alpha_amount;
+
+	bool add: 1;
+	bool gradient: 1;
+	bool clear: 1;
+	bool solid: 1;
+	bool center: 1;
+	bool tile: 1;
+	bool full: 1;
+	bool fill: 1;
+	bool tint: 1;
+	bool blur: 1;
+	bool sharpen: 1;
+	bool contrast: 1;
+	bool brightness: 1;
+	bool gamma: 1;
+	bool flipv: 1;
+	bool fliph: 1;
+	bool flipd;
+	bool alpha;
+	bool write;
+	char add_color[9][9];
+};
+
+/* Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}. */
+static struct argp_option options[] =
 {
-	printf (PACKAGE_STRING " - " DESCRIPTION "\n"
-	        "\n"
-	        "Syntaxis: %s [command1 [arg1..]] [command2 [arg1..]]..."
-	        "\n"
-	        "Gradients:\n"
-	        " -add <color>               Add color to range using distance 1\n"
-	        " -addd <color> <distance>   Add color to range using custom distance\n"
-	        " -gradient <angle>          Render gradient using specified angle\n"
-	        " -clear                     Clear the color range\n"
-	        "\n"
-	        "Solid:\n"
-	        " -solid <color>             Render a solid using the specified color\n"
-	        "\n"
-	        "Image files:\n"
-	        " -center <image>            Render an image centered on screen\n"
-	        " -tile <image>              Render an image tiled\n"
-	        " -full <image>              Render an image maximum aspect\n"
-	        " -fill <image>              Render an image strechted\n"
-	        "\n"
-	        "Manipulations:\n"
-	        " -tint <color>	             Tint the current image\n"
-	        " -blur <radius>             Blur the current image\n"
-	        " -sharpen <radius>          Sharpen the current image\n"
-	        " -contrast <amount>         Adjust contrast of current image\n"
-	        " -brightness <amount>       Adjust brightness of current image\n"
-	        " -gamma <amount>            Adjust gamma level of current image\n"
-	        " -flipv                     Flip the current image vertically\n"
-	        " -fliph                     Flip the current image horizontally\n"
-	        " -flipd                     Flip the current image diagonally\n"
-	        "\n"
-	        "Misc:\n"
-	        " -alpha <amount>            Adjust alpha level for colors and images\n"
-	        " -write <filename>          Write current image to file\n"
-	        "\n"
-	        "Colors are in the #rrbbgg or #rrggbbaa format.\n"
-	        "\n"
-	        "Send bugreports to: " PACKAGE_BUGREPORT "\n" "\n", commandline);
+	{0,              0,          0, 0, "Gradients:", 1},
+	{"add",        'a',    "COLOR", 0, "Add color to range using distance 1", 1},
+	// TODO: Figure out what to do about `-addd <color> <distance>
+	{"gradient",   'g',    "ANGLE", 0, "Render gradient using specified angle", 1},
+	{"clear",      'c',          0, 0, "Clear the color range", 1},
+
+	{0,              0,          0, 0, "Solid:", 2},
+	{"solid",      's',    "COLOR", 0, "Render a solid using the specified color", 2},
+
+	{0,              0,          0, 0, "Image files:", 3},
+	{"center",     'C',    "IMAGE", 0, "Render an image centered on the screen", 3},
+	{"tile",       't',    "IMAGE", 0, "Render an image tiled", 3},
+	{"full",       'f',    "IMAGE", 0, "Render an image maximum aspect", 3},
+	{"fill",       'F',    "IMAGE", 0, "Render an image stretched", 3},
+
+	{0,              0,          0, 0, "Manipulations:", 4},
+	{"tint",       'T',    "COLOR", 0, "Tint current image", 4},
+	{"blur",       'b',   "RADIUS", 0, "Blur the current image", 4},                      // Not implemented
+	{"sharpen",    'S',   "RADIUS", 0, "Sharpen the current image", 4},                   // Not implemented
+	{"contrast",   'o',   "AMOUNT", 0, "Adjust the contrast of the current image", 4},    // Not implemented
+	{"brightness", 'G',   "AMOUNT", 0, "Adjust the bightness of the current image", 4},   // Not implemented
+	{"gamma",      'G',   "AMOUNT", 0, "Adjust the gamma level of the current image", 4}, // Not implemented
+	{"flipv",      'v',          0, 0, "Flip the current image vertically", 4},           // Not implemented
+	{"fliph",      'h',          0, 0, "Flip the current image horizontally", 4},         // Not implemented
+	{"flipd",      'd',          0, 0, "Flip the current image diagonally", 4},           // Not implemented
+
+	{0,              0,          0, 0, "Misc:", -1},
+	{"alpha",      'A',   "AMOUNT", 0, "Adjust alpha level for colors and images", -1},
+	{"write",      'w', "FILENAME", 0, "Write the current image to a file", -1},          // Not implemented
+	{0,              0,          0, 0,                                   0,  0}
+};
+
+/* Order of parameters: KEY, ARG, STATE. */
+static error_t
+parse_opt (int key, char *arg, struct argp_state *state)
+{
+	struct arguments *arguments = state->input;
+	char *endptr;
+	long val;
+	errno = 0;
+
+	switch (key) {
+		case 'a':
+			arguments->add = true;
+			strncpy(arguments->add_color[num_add_colors], arg, sizeof(arguments->add_color[0]));
+			num_add_colors += 1;
+			break;
+		case 'g':
+			arguments->gradient = true;
+			val = strtol(arg, &endptr, 10);
+			arguments->angle = (int)val;
+
+			if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
+					|| (errno != 0 && val == 0)) {
+				perror("strtol");
+				exit(-2);
+			}
+
+			if (endptr == arg) {
+				fprintf(stderr, "No digits were found\n");
+				exit(-2);
+			}
+
+			break;
+		case 'c':
+			arguments->clear = true;
+			break;
+		case 's':
+			arguments->solid = true;
+			arguments->color = arg;
+			break;
+		case 'C':
+			arguments->center = true;
+			arguments->image = arg;
+			break;
+		case 't':
+			arguments->tile = true;
+			arguments->image = arg;
+			break;
+		case 'f':
+			arguments->full = true;
+			arguments->image = arg;
+			break;
+		case 'F':
+			arguments->fill = true;
+			arguments->image = arg;
+			break;
+		case 'T':
+			arguments->tint = true;
+			arguments->color = arg;
+			break;
+		case 'A':
+			arguments->alpha = true;
+			arguments->alpha_amount = atoi(arg);
+			break;
+		default:
+			return ARGP_ERR_UNKNOWN;
+	}
+	return 0;
 }
 
+/* Program documentation. */
+static char doc[] = "yawa -- Yet Another Wallpaper Application";
+/* The ARGP structure itself. */
+static struct argp argp = {options, parse_opt, "", doc, NULL, NULL, 0};
+
 // Globals:
-Display *display;
-int screen;
+static Display *display;
+static int screen;
 
 // Adapted from fluxbox' bsetroot
 int
@@ -98,9 +213,9 @@ setRootAtoms (Pixmap pixmap)
 			                    atom_eroot, 0L, 1L, False, AnyPropertyType,
 			                    &type, &format, &length, &after, &data_eroot);
 			if (data_root && data_eroot && type == XA_PIXMAP &&
-			    *((Pixmap *) data_root) == *((Pixmap *) data_eroot))
+			    *(data_root) == *(data_eroot))
 			{
-				XKillClient (display, *((Pixmap *) data_root));
+				XKillClient (display, *(data_root));
 			}
 		}
 	}
@@ -121,11 +236,6 @@ setRootAtoms (Pixmap pixmap)
 
 	return 1;
 }
-
-typedef struct
-{
-	int r, g, b, a;
-} Color, *PColor;
 
 int
 getHex (char c)
@@ -262,12 +372,23 @@ load_image (ImageMode mode, const char *arg, int rootW, int rootH, int alpha,
 int
 main (int argc, char **argv)
 {
+	struct arguments arguments = {
+	    "", "", 0, 0, false,
+	    false, false, false, false, false, false, false, false, false,
+	    false, false, false, false, false, false, false, false, false,
+	    {{0}} // add_color array
+	};
+
+	/* Where the magic happens */
+	argp_parse (&argp, argc, argv, 0, 0, &arguments);
+
 	Visual *vis;
 	Colormap cm;
 	Display *_display;
 	Imlib_Context *context;
 	Imlib_Image image;
-	int width, height, depth, i, alpha;
+	int width, height, depth, alpha;
+	int i = 0;
 	Pixmap pixmap;
 	Imlib_Color_Modifier modifier = NULL;
 	_display = XOpenDisplay (NULL);
@@ -287,8 +408,8 @@ main (int argc, char **argv)
 		depth = DefaultDepth (display, screen);
 
 		pixmap =
-			XCreatePixmap (display, RootWindow (display, screen), width, height,
-			               depth);
+			XCreatePixmap (display, RootWindow (display, screen), (unsigned int) width, (unsigned int) height,
+			               (unsigned int) depth);
 
 		imlib_context_set_visual (vis);
 		imlib_context_set_colormap (cm);
@@ -306,8 +427,6 @@ main (int argc, char **argv)
 
 		alpha = 255;
 
-		for (i = 1; i < argc; i++)
-		{
 			if (modifier != NULL)
 			{
 				imlib_apply_color_modifier ();
@@ -316,168 +435,89 @@ main (int argc, char **argv)
 			modifier = imlib_create_color_modifier ();
 			imlib_context_set_color_modifier (modifier);
 
-			if (strcmp (argv[i], "-alpha") == 0)
+			if (arguments.alpha)
 			{
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing alpha\n");
-					continue;
-				}
-				if (sscanf (argv[i], "%i", &alpha) == 0)
-				{
-					fprintf (stderr, "Bad alpha (%s)\n", argv[i]);
-					continue;
-				}
-
+				alpha = arguments.alpha;
 			}
-			else if (strcmp (argv[i], "-solid") == 0)
+			if (arguments.solid)
 			{
 				Color c;
-				if ((++i) >= argc)
+				if (parse_color (arguments.color, &c, alpha) == 0)
 				{
-					fprintf (stderr, "Missing color\n");
-					continue;
-				}
-				if (parse_color (argv[i], &c, alpha) == 0)
-				{
-					fprintf (stderr, "Bad color (%s)\n", argv[i]);
+					fprintf (stderr, "Bad color (%s)\n", arguments.color);
 					continue;
 				}
 				imlib_context_set_color (c.r, c.g, c.b, c.a);
 				imlib_image_fill_rectangle (0, 0, width, height);
 			}
-			else if (strcmp (argv[i], "-clear") == 0)
+			if (arguments.clear)
 			{
 				imlib_free_color_range ();
 				imlib_context_set_color_range (imlib_create_color_range ());
 			}
-			else if (strcmp (argv[i], "-add") == 0)
+			// TODO: Add back -add and -addd
+			if (arguments.add)
 			{
-				Color c;
-				if ((++i) >= argc)
+				for (i = 0; i < num_add_colors; i++)
 				{
-					fprintf (stderr, "Missing color\n");
-					continue;
+					Color c;
+					if (parse_color (arguments.add_color[i], &c, alpha) == 0)
+					{
+						fprintf (stderr, "Bad color (%s)\n", arguments.add_color[i]);
+						continue;
+					}
+					imlib_context_set_color (c.r, c.g, c.b, c.a);
+					imlib_add_color_to_color_range (1);
 				}
-				if (parse_color (argv[i], &c, alpha) == 0)
-				{
-					fprintf (stderr, "Bad color (%s)\n", argv[i - 1]);
-					continue;
-				}
-				imlib_context_set_color (c.r, c.g, c.b, c.a);
-				imlib_add_color_to_color_range (1);
 			}
-			else if (strcmp (argv[i], "-addd") == 0)
+			if (arguments.gradient)
 			{
-				Color c;
-				int distance;
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing color\n");
-					continue;
-				}
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing distance\n");
-					continue;
-				}
-				if (parse_color (argv[i - 1], &c, alpha) == 0)
-				{
-					fprintf (stderr, "Bad color (%s)\n", argv[i - 1]);
-					continue;
-				}
-				if (sscanf (argv[i], "%i", &distance) == 0)
-				{
-					fprintf (stderr, "Bad distance (%s)\n", argv[i]);
-					continue;
-				}
-				imlib_context_set_color (c.r, c.g, c.b, c.a);
-				imlib_add_color_to_color_range (distance);
-			}
-			else if (strcmp (argv[i], "-gradient") == 0)
-			{
-				int angle;
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing angle\n");
-					continue;
-				}
-				if (sscanf (argv[i], "%i", &angle) == 0)
-				{
-					fprintf (stderr, "Bad angle (%s)\n", argv[i]);
-					continue;
-				}
 				imlib_image_fill_color_range_rectangle (0, 0, width, height,
-				                                        angle);
+				                                        arguments.angle);
 			}
-			else if (strcmp (argv[i], "-fill") == 0)
+			if (arguments.fill)
 			{
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing image\n");
-					continue;
-				}
-				if (load_image (Fill, argv[i], width, height, alpha, image) ==
+				if (load_image (Fill, arguments.image, width, height, alpha, image) ==
 				                0)
 				{
-					fprintf (stderr, "Bad image (%s)\n", argv[i]);
+					fprintf (stderr, "Bad image (%s)\n", arguments.image);
 					continue;
 				}
 			}
-			else if (strcmp (argv[i], "-full") == 0)
+			if (arguments.full)
 			{
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing image\n");
-					continue;
-				}
-				if (load_image (Full, argv[i], width, height, alpha, image) ==
+				if (load_image (Full, arguments.image, width, height, alpha, image) ==
 				                0)
 				{
-					fprintf (stderr, "Bad image (%s)\n", argv[i]);
+					fprintf (stderr, "Bad image (%s)\n", arguments.image);
 					continue;
 				}
 			}
-			else if (strcmp (argv[i], "-tile") == 0)
+			if (arguments.tile)
 			{
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing image\n");
-					continue;
-				}
-				if (load_image (Tile, argv[i], width, height, alpha, image) ==
+				if (load_image (Tile, arguments.image, width, height, alpha, image) ==
 				                0)
 				{
-					fprintf (stderr, "Bad image (%s)\n", argv[i]);
+					fprintf (stderr, "Bad image (%s)\n", arguments.image);
 					continue;
 				}
 			}
-			else if (strcmp (argv[i], "-center") == 0)
+			if (arguments.center)
 			{
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing image\n");
-					continue;
-				}
-				if (load_image (Center, argv[i], width, height, alpha, image) ==
+				if (load_image (Center, arguments.image, width, height, alpha, image) ==
 				                0)
 				{
-					fprintf (stderr, "Bad image (%s)\n", argv[i]);
+					fprintf (stderr, "Bad image (%s)\n", arguments.image);
 					continue;
 				}
 			}
-			else if (strcmp (argv[i], "-tint") == 0)
+			if (arguments.tint)
 			{
 				Color c;
 				DATA8 r[256], g[256], b[256], a[256];
 				int j;
 
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing color\n");
-					continue;
-				}
-				if (parse_color (argv[i], &c, 255) == 0)
+				if (parse_color (arguments.color, &c, 255) == 0)
 				{
 					fprintf (stderr, "Bad color\n");
 					continue;
@@ -494,14 +534,9 @@ main (int argc, char **argv)
 
 				imlib_set_color_modifier_tables (r, g, b, a);
 			}
-			else if (strcmp (argv[i], "-blur") == 0)
+			if (arguments.blur)
 			{
 				int intval;
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing value\n");
-					continue;
-				}
 				if (sscanf (argv[i], "%i", &intval) == 0)
 				{
 					fprintf (stderr, "Bad value (%s)\n", argv[i]);
@@ -509,7 +544,7 @@ main (int argc, char **argv)
 				}
 				imlib_image_blur (intval);
 			}
-			else if (strcmp (argv[i], "-sharpen") == 0)
+			if (arguments.sharpen)
 			{
 				int intval;
 				if ((++i) >= argc)
@@ -524,7 +559,7 @@ main (int argc, char **argv)
 				}
 				imlib_image_sharpen (intval);
 			}
-			else if (strcmp (argv[i], "-contrast") == 0)
+			if (arguments.contrast)
 			{
 				double dblval;
 				if ((++i) >= argc)
@@ -539,7 +574,7 @@ main (int argc, char **argv)
 				}
 				imlib_modify_color_modifier_contrast (dblval);
 			}
-			else if (strcmp (argv[i], "-brightness") == 0)
+			if (arguments.brightness)
 			{
 				double dblval;
 				if ((++i) >= argc)
@@ -554,7 +589,7 @@ main (int argc, char **argv)
 				}
 				imlib_modify_color_modifier_brightness (dblval);
 			}
-			else if (strcmp (argv[i], "-gamma") == 0)
+			if (arguments.gamma)
 			{
 				double dblval;
 				if ((++i) >= argc)
@@ -569,42 +604,22 @@ main (int argc, char **argv)
 				}
 				imlib_modify_color_modifier_gamma (dblval);
 			}
-			else if (strcmp (argv[i], "-flipv") == 0)
+			if (arguments.flipv)
 			{
 				imlib_image_flip_vertical ();
 			}
-			else if (strcmp (argv[i], "-fliph") == 0)
+			if (arguments.fliph)
 			{
 				imlib_image_flip_horizontal ();
 			}
-			else if (strcmp (argv[i], "-flipd") == 0)
+			if (arguments.flipd)
 			{
 				imlib_image_flip_diagonal ();
 			}
-			else if (strcmp (argv[i], "-write") == 0)
+			if (arguments.write)
 			{
-				if ((++i) >= argc)
-				{
-					fprintf (stderr, "Missing filename\n");
-					continue;
-				}
 				imlib_save_image (argv[i]);
 			}
-			else
-			{
-				usage (argv[0]);
-				imlib_free_image ();
-				imlib_free_color_range ();
-				if (modifier != NULL)
-				{
-					imlib_context_set_color_modifier (modifier);
-					imlib_free_color_modifier ();
-					modifier = NULL;
-				}
-				XFreePixmap (display, pixmap);
-				exit (1);
-			}
-		}
 
 		if (modifier != NULL)
 		{
