@@ -26,6 +26,7 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <argp.h>
+#include <bsd/string.h>
 
 #include "yawa.h"
 #include "config.h"
@@ -172,55 +173,47 @@ setRootAtoms (Pixmap pixmap)
 }
 
 int
-getHex (char c)
+parse_color (char *hex, PColor c, int a)
 {
-	switch (c)
-	{
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
-			return c - '0';
-		case 'A':
-		case 'B':
-		case 'C':
-		case 'D':
-		case 'E':
-		case 'F':
-			return c - 'A' + 10;
-		case 'a':
-		case 'b':
-		case 'c':
-		case 'd':
-		case 'e':
-		case 'f':
-			return c - 'a' + 10;
-		default:
-			return 0;
+	if ((strlen(hex) != 7) && (strlen(hex) != 9))
+		return 0;
+
+	int len;
+	if (strlen(hex) == 9) {
+		len = 4;
+	} else {
+		len = 3;
 	}
-}
 
-int
-parse_color (char *arg, PColor c, int a)
-{
-	if (arg[0] != '#')
-		return 0;
+	hex++;
+	int colors[4];
+	for (int i = 0; i < len; hex += 2, i++) {
+		char color[3];
+		strlcpy(color, hex, 3);
 
-	if ((strlen (arg) != 7) && (strlen (arg) != 9))
-		return 0;
+		char *endptr;
+		errno = 0;
+		long val = strtol(color, &endptr, 16);
+		if (errno != 0) {
+			perror("strtol");
+			exit(-2);
+		}
+		if (endptr == color) {
+			fprintf(stderr, "No valid hex color found\n");
+			exit(-2);
+		}
 
-	c->r = getHex (arg[1]) * 16 + getHex (arg[2]);
-	c->g = getHex (arg[3]) * 16 + getHex (arg[4]);
-	c->b = getHex (arg[5]) * 16 + getHex (arg[6]);
-	c->a = a;
-	if (strlen (arg) == 9)
-		c->a = getHex (arg[7]) * 16 + getHex (arg[8]);
+		colors[i] = (int)val;
+	}
+
+	c->r = colors[0];
+	c->g = colors[1];
+	c->b = colors[2];
+	if (len == 4) {
+		c->a = colors[3];
+	} else {
+		c->a = a;
+	}
 
 	return 1;
 }
