@@ -43,7 +43,8 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	switch (key) {
 		case 'a':
 			arguments->add = true;
-			strncpy(arguments->add_color[num_add_colors], arg, sizeof(arguments->add_color[0]));
+			strncpy(arguments->add_color[num_add_colors], arg,
+			        sizeof(arguments->add_color[0]));
 			num_add_colors += 1;
 			break;
 		case 'g':
@@ -52,13 +53,15 @@ parse_opt (int key, char *arg, struct argp_state *state)
 			arguments->angle = (int)val;
 
 			if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
-					|| (errno != 0 && val == 0)) {
+			    || (errno != 0 && val == 0))
+			{
 				perror("strtol");
 				exit(-2);
 			}
 
-			if (endptr == arg) {
-				fprintf(stderr, "No digits were found\n");
+			if (endptr == arg)
+			{
+				fprintf(stderr, "Valid gradiant angle not found\n");
 				exit(-2);
 			}
 			break;
@@ -95,13 +98,13 @@ parse_opt (int key, char *arg, struct argp_state *state)
 			arguments->alpha_amount = (int)val;
 
 			if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
-					|| (errno != 0 && val == 0)) {
+			    || (errno != 0 && val == 0)) {
 				perror("strtol");
 				exit(-2);
 			}
 
 			if (endptr == arg) {
-				fprintf(stderr, "No digits were found\n");
+				fprintf(stderr, "Valid alpha amount not found\n");
 				exit(-2);
 			}
 			break;
@@ -127,41 +130,43 @@ setRootAtoms (Pixmap pixmap)
 	int format;
 	unsigned long length, after;
 
-	atom_root = XInternAtom (display, "_XROOTMAP_ID", True);
-	atom_eroot = XInternAtom (display, "ESETROOT_PMAP_ID", True);
+	atom_root = XInternAtom(display, "_XROOTMAP_ID", True);
+	atom_eroot = XInternAtom(display, "ESETROOT_PMAP_ID", True);
 
 	// doing this to clean up after old background
 	if (atom_root != None && atom_eroot != None)
 	{
-		XGetWindowProperty (display, RootWindow (display, screen),
-		                    atom_root, 0L, 1L, False, AnyPropertyType,
-		                    &type, &format, &length, &after, &data_root);
+		XGetWindowProperty(display, RootWindow(display, screen),
+		                   atom_root, 0L, 1L, False, AnyPropertyType,
+		                   &type, &format, &length, &after, &data_root);
 		if (type == XA_PIXMAP)
 		{
-			XGetWindowProperty (display, RootWindow (display, screen),
-			                    atom_eroot, 0L, 1L, False, AnyPropertyType,
-			                    &type, &format, &length, &after, &data_eroot);
+			XGetWindowProperty(display, RootWindow(display, screen),
+			                   atom_eroot, 0L, 1L, False, AnyPropertyType,
+			                   &type, &format, &length, &after, &data_eroot);
 			if (data_root && data_eroot && type == XA_PIXMAP &&
 			    *(data_root) == *(data_eroot))
 			{
-				XKillClient (display, *(data_root));
+				XKillClient(display, *(data_root));
 			}
 		}
 	}
 
-	atom_root = XInternAtom (display, "_XROOTPMAP_ID", False);
-	atom_eroot = XInternAtom (display, "ESETROOT_PMAP_ID", False);
+	atom_root = XInternAtom(display, "_XROOTPMAP_ID", False);
+	atom_eroot = XInternAtom(display, "ESETROOT_PMAP_ID", False);
 
 	if (atom_root == None || atom_eroot == None)
+	{
 		return 0;
+	}
 
 	// setting new background atoms
-	XChangeProperty (display, RootWindow (display, screen),
-	                 atom_root, XA_PIXMAP, 32, PropModeReplace,
-	                 (unsigned char *) &pixmap, 1);
-	XChangeProperty (display, RootWindow (display, screen), atom_eroot,
-	                 XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &pixmap,
-	                 1);
+	XChangeProperty(display, RootWindow(display, screen),
+	                atom_root, XA_PIXMAP, 32, PropModeReplace,
+	                (unsigned char *) &pixmap, 1);
+	XChangeProperty(display, RootWindow(display, screen), atom_eroot,
+	                XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &pixmap,
+	                1);
 
 	return 1;
 }
@@ -221,40 +226,40 @@ parse_color (char *arg, PColor c, int a)
 }
 
 int
-load_image (ImageMode mode, const char *arg, int rootW, int rootH, int alpha,
-            Imlib_Image rootimg)
+load_image (ImageMode mode, const char *arg, int rootW, int rootH,
+            int alpha, Imlib_Image rootimg)
 {
 	int imgW, imgH, o;
-	Imlib_Image buffer = imlib_load_image (arg);
+	Imlib_Image buffer = imlib_load_image(arg);
 
 	if (!buffer)
 		return 0;
 
-	imlib_context_set_image (buffer);
-	imgW = imlib_image_get_width (), imgH = imlib_image_get_height ();
+	imlib_context_set_image(buffer);
+	imgW = imlib_image_get_width(), imgH = imlib_image_get_height();
 
 	if (alpha < 255)
 	{
 		// Create alpha-override mask
-		imlib_image_set_has_alpha (1);
-		Imlib_Color_Modifier modifier = imlib_create_color_modifier ();
-		imlib_context_set_color_modifier (modifier);
+		imlib_image_set_has_alpha(1);
+		Imlib_Color_Modifier modifier = imlib_create_color_modifier();
+		imlib_context_set_color_modifier(modifier);
 
 		DATA8 red[256], green[256], blue[256], alph[256];
-		imlib_get_color_modifier_tables (red, green, blue, alph);
+		imlib_get_color_modifier_tables(red, green, blue, alph);
 		for (o = 0; o < 256; o++)
 			alph[o] = (DATA8) alpha;
-		imlib_set_color_modifier_tables (red, green, blue, alph);
+		imlib_set_color_modifier_tables(red, green, blue, alph);
 
-		imlib_apply_color_modifier ();
-		imlib_free_color_modifier ();
+		imlib_apply_color_modifier();
+		imlib_free_color_modifier();
 	}
 
-	imlib_context_set_image (rootimg);
+	imlib_context_set_image(rootimg);
 	if (mode == Fill)
 	{
-		imlib_blend_image_onto_image (buffer, 0, 0, 0, imgW, imgH,
-		                              0, 0, rootW, rootH);
+		imlib_blend_image_onto_image(buffer, 0, 0, 0, imgW, imgH,
+		                             0, 0, rootW, rootH);
 	}
 	else if (mode == Full)
 	{
@@ -264,9 +269,9 @@ load_image (ImageMode mode, const char *arg, int rootW, int rootH, int alpha,
 			aspect = (double) rootH / (double) imgH;
 		top = (rootH - (int) (imgH * aspect)) / 2;
 		left = (rootW - (int) (imgW * aspect)) / 2;
-		imlib_blend_image_onto_image (buffer, 0, 0, 0, imgW, imgH,
-		                              left, top, (int) (imgW * aspect),
-		                              (int) (imgH * aspect));
+		imlib_blend_image_onto_image(buffer, 0, 0, 0, imgW, imgH,
+		                             left, top, (int) (imgW * aspect),
+		                             (int) (imgH * aspect));
 	}
 	else
 	{
@@ -280,20 +285,20 @@ load_image (ImageMode mode, const char *arg, int rootW, int rootH, int alpha,
 
 			for (x = left; x < rootW; x += imgW)
 				for (y = top; y < rootH; y += imgH)
-					imlib_blend_image_onto_image (buffer, 0, 0, 0, imgW, imgH,
+					imlib_blend_image_onto_image(buffer, 0, 0, 0, imgW, imgH,
 					                              x, y, imgW, imgH);
 		}
 		else
 		{
-			imlib_blend_image_onto_image (buffer, 0, 0, 0, imgW, imgH,
-			                              left, top, imgW, imgH);
+			imlib_blend_image_onto_image(buffer, 0, 0, 0, imgW, imgH,
+			                             left, top, imgW, imgH);
 		}
 	}
 
-	imlib_context_set_image (buffer);
-	imlib_free_image ();
+	imlib_context_set_image(buffer);
+	imlib_free_image();
 
-	imlib_context_set_image (rootimg);
+	imlib_context_set_image(rootimg);
 
 	return 1;
 }
@@ -302,14 +307,14 @@ int
 main (int argc, char **argv)
 {
 	struct arguments arguments = {
-	    "", "", 0, 0, false,
-	    false, false, false, false, false, false, false, false, false,
-	    false, false, false, false, false, false, false, false, false,
+	    "", "", 0, 0, false, false, false, false, false,
+	    false, false, false, false, false, false, false,
+	    false, false, false, false, false, false, false,
 	    {{0}} // add_color array
 	};
 
 	/* Where the magic happens */
-	argp_parse (&argp, argc, argv, 0, 0, &arguments);
+	argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
 	Visual *vis;
 	Colormap cm;
@@ -320,39 +325,40 @@ main (int argc, char **argv)
 	int i = 0;
 	Pixmap pixmap;
 	Imlib_Color_Modifier modifier = NULL;
-	_display = XOpenDisplay (NULL);
+	_display = XOpenDisplay(NULL);
 
-	for (screen = 0; screen < ScreenCount (_display); screen++)
+	for (screen = 0; screen < ScreenCount(_display); screen++)
 	{
-		display = XOpenDisplay (NULL);
+		display = XOpenDisplay(NULL);
 
-		context = imlib_context_new ();
-		imlib_context_push (context);
+		context = imlib_context_new();
+		imlib_context_push(context);
 
-		imlib_context_set_display (display);
-		vis = DefaultVisual (display, screen);
-		cm = DefaultColormap (display, screen);
-		width = DisplayWidth (display, screen);
-		height = DisplayHeight (display, screen);
-		depth = DefaultDepth (display, screen);
+		imlib_context_set_display(display);
+		vis = DefaultVisual(display, screen);
+		cm = DefaultColormap(display, screen);
+		width = DisplayWidth(display, screen);
+		height = DisplayHeight(display, screen);
+		depth = DefaultDepth(display, screen);
 
 		pixmap =
-			XCreatePixmap (display, RootWindow (display, screen), (unsigned int) width, (unsigned int) height,
-			               (unsigned int) depth);
+			XCreatePixmap(display, RootWindow(display, screen),
+			              (unsigned int) width, (unsigned int) height,
+			              (unsigned int) depth);
 
-		imlib_context_set_visual (vis);
-		imlib_context_set_colormap (cm);
-		imlib_context_set_drawable (pixmap);
-		imlib_context_set_color_range (imlib_create_color_range ());
+		imlib_context_set_visual(vis);
+		imlib_context_set_colormap(cm);
+		imlib_context_set_drawable(pixmap);
+		imlib_context_set_color_range(imlib_create_color_range());
 
-		image = imlib_create_image (width, height);
-		imlib_context_set_image (image);
+		image = imlib_create_image(width, height);
+		imlib_context_set_image(image);
 
-		imlib_context_set_color (0, 0, 0, 255);
-		imlib_image_fill_rectangle (0, 0, width, height);
+		imlib_context_set_color(0, 0, 0, 255);
+		imlib_image_fill_rectangle(0, 0, width, height);
 
-		imlib_context_set_dither (1);
-		imlib_context_set_blend (1);
+		imlib_context_set_dither(1);
+		imlib_context_set_blend(1);
 
 		if (arguments.alpha)
 			alpha = arguments.alpha;
@@ -361,27 +367,27 @@ main (int argc, char **argv)
 
 		if (modifier != NULL)
 		{
-			imlib_apply_color_modifier ();
-			imlib_free_color_modifier ();
+			imlib_apply_color_modifier();
+			imlib_free_color_modifier();
 		}
-		modifier = imlib_create_color_modifier ();
-		imlib_context_set_color_modifier (modifier);
+		modifier = imlib_create_color_modifier();
+		imlib_context_set_color_modifier(modifier);
 
 		if (arguments.solid)
 		{
 			Color c;
-			if (parse_color (arguments.color, &c, alpha) == 0)
+			if (parse_color(arguments.color, &c, alpha) == 0)
 			{
-				fprintf (stderr, "Bad color (%s)\n", arguments.color);
+				fprintf(stderr, "Bad color (%s)\n", arguments.color);
 				continue;
 			}
-			imlib_context_set_color (c.r, c.g, c.b, c.a);
-			imlib_image_fill_rectangle (0, 0, width, height);
+			imlib_context_set_color(c.r, c.g, c.b, c.a);
+			imlib_image_fill_rectangle(0, 0, width, height);
 		}
 		if (arguments.clear)
 		{
-			imlib_free_color_range ();
-			imlib_context_set_color_range (imlib_create_color_range ());
+			imlib_free_color_range();
+			imlib_context_set_color_range(imlib_create_color_range());
 		}
 		// TODO: Add back -addd
 		if (arguments.add)
@@ -389,48 +395,48 @@ main (int argc, char **argv)
 			for (i = 0; i < num_add_colors; i++)
 			{
 				Color c;
-				if (parse_color (arguments.add_color[i], &c, alpha) == 0)
+				if (parse_color(arguments.add_color[i], &c, alpha) == 0)
 				{
-					fprintf (stderr, "Bad color (%s)\n", arguments.add_color[i]);
+					fprintf(stderr, "Bad color (%s)\n", arguments.add_color[i]);
 					continue;
 				}
-				imlib_context_set_color (c.r, c.g, c.b, c.a);
-				imlib_add_color_to_color_range (1);
+				imlib_context_set_color(c.r, c.g, c.b, c.a);
+				imlib_add_color_to_color_range(1);
 			}
 		}
 		if (arguments.gradient)
 		{
-			imlib_image_fill_color_range_rectangle (0, 0, width, height, arguments.angle);
+			imlib_image_fill_color_range_rectangle(0, 0, width, height, arguments.angle);
 		}
 		if (arguments.fill)
 		{
-			if (load_image (Fill, arguments.image, width, height, alpha, image) == 0)
+			if (load_image(Fill, arguments.image, width, height, alpha, image) == 0)
 			{
-				fprintf (stderr, "Bad image (%s)\n", arguments.image);
+				fprintf(stderr, "Bad image (%s)\n", arguments.image);
 				continue;
 			}
 		}
 		if (arguments.full)
 		{
-			if (load_image (Full, arguments.image, width, height, alpha, image) == 0)
+			if (load_image(Full, arguments.image, width, height, alpha, image) == 0)
 			{
-				fprintf (stderr, "Bad image (%s)\n", arguments.image);
+				fprintf(stderr, "Bad image (%s)\n", arguments.image);
 				continue;
 			}
 		}
 		if (arguments.tile)
 		{
-			if (load_image (Tile, arguments.image, width, height, alpha, image) == 0)
+			if (load_image(Tile, arguments.image, width, height, alpha, image) == 0)
 			{
-				fprintf (stderr, "Bad image (%s)\n", arguments.image);
+				fprintf(stderr, "Bad image (%s)\n", arguments.image);
 				continue;
 			}
 		}
 		if (arguments.center)
 		{
-			if (load_image (Center, arguments.image, width, height, alpha, image) == 0)
+			if (load_image(Center, arguments.image, width, height, alpha, image) == 0)
 			{
-				fprintf (stderr, "Bad image (%s)\n", arguments.image);
+				fprintf(stderr, "Bad image (%s)\n", arguments.image);
 				continue;
 			}
 		}
@@ -440,13 +446,13 @@ main (int argc, char **argv)
 			DATA8 r[256], g[256], b[256], a[256];
 			int j;
 
-			if (parse_color (arguments.color, &c, 255) == 0)
+			if (parse_color(arguments.color, &c, 255) == 0)
 			{
-				fprintf (stderr, "Bad color\n");
+				fprintf(stderr, "Bad color\n");
 				continue;
 			}
 
-			imlib_get_color_modifier_tables (r, g, b, a);
+			imlib_get_color_modifier_tables(r, g, b, a);
 
 			for (j = 0; j < 256; j++)
 			{
@@ -455,121 +461,121 @@ main (int argc, char **argv)
 				b[j] = (DATA8) (((double) b[j] / 255.0) * (double) c.b);
 			}
 
-			imlib_set_color_modifier_tables (r, g, b, a);
+			imlib_set_color_modifier_tables(r, g, b, a);
 		}
 		if (arguments.blur)
 		{
 			int intval;
-			if (sscanf (argv[i], "%i", &intval) == 0)
+			if (sscanf(argv[i], "%i", &intval) == 0)
 			{
-				fprintf (stderr, "Bad value (%s)\n", argv[i]);
+				fprintf(stderr, "Bad value (%s)\n", argv[i]);
 				continue;
 			}
-			imlib_image_blur (intval);
+			imlib_image_blur(intval);
 		}
 		if (arguments.sharpen)
 		{
 			int intval;
 			if ((++i) >= argc)
 			{
-				fprintf (stderr, "Missing value\n");
+				fprintf(stderr, "Missing value\n");
 				continue;
 			}
-			if (sscanf (argv[i], "%i", &intval) == 0)
+			if (sscanf(argv[i], "%i", &intval) == 0)
 			{
-				fprintf (stderr, "Bad value (%s)\n", argv[i]);
+				fprintf(stderr, "Bad value (%s)\n", argv[i]);
 				continue;
 			}
-			imlib_image_sharpen (intval);
+			imlib_image_sharpen(intval);
 		}
 		if (arguments.contrast)
 		{
 			double dblval;
 			if ((++i) >= argc)
 			{
-				fprintf (stderr, "Missing value\n");
+				fprintf(stderr, "Missing value\n");
 				continue;
 			}
-			if (sscanf (argv[i], "%lf", &dblval) == 0)
+			if (sscanf(argv[i], "%lf", &dblval) == 0)
 			{
-				fprintf (stderr, "Bad value (%s)\n", argv[i]);
+				fprintf(stderr, "Bad value (%s)\n", argv[i]);
 				continue;
 			}
-			imlib_modify_color_modifier_contrast (dblval);
+			imlib_modify_color_modifier_contrast(dblval);
 		}
 		if (arguments.brightness)
 		{
 			double dblval;
 			if ((++i) >= argc)
 			{
-				fprintf (stderr, "Missing value\n");
+				fprintf(stderr, "Missing value\n");
 				continue;
 			}
-			if (sscanf (argv[i], "%lf", &dblval) == 0)
+			if (sscanf(argv[i], "%lf", &dblval) == 0)
 			{
-				fprintf (stderr, "Bad value (%s)\n", argv[i]);
+				fprintf(stderr, "Bad value (%s)\n", argv[i]);
 				continue;
 			}
-			imlib_modify_color_modifier_brightness (dblval);
+			imlib_modify_color_modifier_brightness(dblval);
 		}
 		if (arguments.gamma)
 		{
 			double dblval;
 			if ((++i) >= argc)
 			{
-				fprintf (stderr, "Missing value\n");
+				fprintf(stderr, "Missing value\n");
 				continue;
 			}
-			if (sscanf (argv[i], "%lf", &dblval) == 0)
+			if (sscanf(argv[i], "%lf", &dblval) == 0)
 			{
-				fprintf (stderr, "Bad value (%s)\n", argv[i]);
+				fprintf(stderr, "Bad value (%s)\n", argv[i]);
 				continue;
 			}
-			imlib_modify_color_modifier_gamma (dblval);
+			imlib_modify_color_modifier_gamma(dblval);
 		}
 		if (arguments.flipv)
 		{
-			imlib_image_flip_vertical ();
+			imlib_image_flip_vertical();
 		}
 		if (arguments.fliph)
 		{
-			imlib_image_flip_horizontal ();
+			imlib_image_flip_horizontal();
 		}
 		if (arguments.flipd)
 		{
-			imlib_image_flip_diagonal ();
+			imlib_image_flip_diagonal();
 		}
 		if (arguments.write)
 		{
-			imlib_save_image (argv[i]);
+			imlib_save_image(argv[i]);
 		}
 
 		if (modifier != NULL)
 		{
-			imlib_context_set_color_modifier (modifier);
-			imlib_apply_color_modifier ();
-			imlib_free_color_modifier ();
+			imlib_context_set_color_modifier(modifier);
+			imlib_apply_color_modifier();
+			imlib_free_color_modifier();
 			modifier = NULL;
 		}
-		imlib_render_image_on_drawable (0, 0);
-		imlib_free_image ();
-		imlib_free_color_range ();
+		imlib_render_image_on_drawable(0, 0);
+		imlib_free_image();
+		imlib_free_color_range();
 
-		if (setRootAtoms (pixmap) == 0)
-			fprintf (stderr, "Couldn't create atoms...\n");
+		if (setRootAtoms(pixmap) == 0)
+			fprintf(stderr, "Couldn't create atoms...\n");
 
-		XKillClient (display, AllTemporary);
-		XSetCloseDownMode (display, RetainTemporary);
+		XKillClient(display, AllTemporary);
+		XSetCloseDownMode(display, RetainTemporary);
 
-		XSetWindowBackgroundPixmap (display, RootWindow (display, screen),
+		XSetWindowBackgroundPixmap(display, RootWindow(display, screen),
 		                            pixmap);
-		XClearWindow (display, RootWindow (display, screen));
+		XClearWindow(display, RootWindow(display, screen));
 
-		XFlush (display);
-		XSync (display, False);
+		XFlush(display);
+		XSync(display, False);
 
-		imlib_context_pop ();
-		imlib_context_free (context);
+		imlib_context_pop();
+		imlib_context_free(context);
 	}
 
 	return 0;
