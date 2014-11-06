@@ -45,7 +45,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
 		case 'a':
 			arguments->add = true;
 			strncpy(arguments->add_color[num_add_colors], arg,
-			        sizeof(arguments->add_color[0]));
+			        sizeof(arguments->add_color[0]) - 1);
 			num_add_colors += 1;
 			break;
 		case 'g':
