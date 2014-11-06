@@ -3,4 +3,4 @@ compiler: clang
 script: ./scripts/travis_run.sh
 install:
     - sudo apt-get update -qq
-    - sudo apt-get install -y libx11-dev libimlib2-dev
+    - sudo apt-get install -y libx11-dev libimlib2-dev libbsd-dev
