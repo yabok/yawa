@@ -383,7 +383,7 @@ main (int argc, char **argv)
 			if (parse_color(arguments.color, &c, alpha) == 0)
 			{
 				fprintf(stderr, "Bad color (%s)\n", arguments.color);
-				continue;
+				exit(-2);
 			}
 			imlib_context_set_color(c.r, c.g, c.b, c.a);
 			imlib_image_fill_rectangle(0, 0, width, height);
@@ -402,7 +402,7 @@ main (int argc, char **argv)
 				if (parse_color(arguments.add_color[i], &c, alpha) == 0)
 				{
 					fprintf(stderr, "Bad color (%s)\n", arguments.add_color[i]);
-					continue;
+					exit(-2);
 				}
 				imlib_context_set_color(c.r, c.g, c.b, c.a);
 				imlib_add_color_to_color_range(1);
@@ -444,6 +444,7 @@ main (int argc, char **argv)
 				continue;
 			}
 		}
+
 		if (arguments.tint)
 		{
 			Color c;
@@ -453,7 +454,7 @@ main (int argc, char **argv)
 			if (parse_color(arguments.color, &c, 255) == 0)
 			{
 				fprintf(stderr, "Bad color\n");
-				continue;
+				exit(-2);
 			}
 
 			imlib_get_color_modifier_tables(r, g, b, a);
@@ -537,6 +538,7 @@ main (int argc, char **argv)
 			}
 			imlib_modify_color_modifier_gamma(dblval);
 		}
+
 		if (arguments.flipv)
 		{
 			imlib_image_flip_vertical();
@@ -549,6 +551,7 @@ main (int argc, char **argv)
 		{
 			imlib_image_flip_diagonal();
 		}
+
 		if (arguments.write)
 		{
 			imlib_save_image(argv[i]);
