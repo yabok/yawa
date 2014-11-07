@@ -476,16 +476,12 @@ main (int argc, char **argv)
 				fprintf(stderr, "Bad value (%s)\n", argv[i]);
 				continue;
 			}
+
 			imlib_image_blur(intval);
 		}
 		if (arguments.sharpen)
 		{
 			int intval;
-			if ((++i) >= argc)
-			{
-				fprintf(stderr, "Missing value\n");
-				continue;
-			}
 			if (sscanf(argv[i], "%i", &intval) == 0)
 			{
 				fprintf(stderr, "Bad value (%s)\n", argv[i]);
@@ -496,11 +492,6 @@ main (int argc, char **argv)
 		if (arguments.contrast)
 		{
 			double dblval;
-			if ((++i) >= argc)
-			{
-				fprintf(stderr, "Missing value\n");
-				continue;
-			}
 			if (sscanf(argv[i], "%lf", &dblval) == 0)
 			{
 				fprintf(stderr, "Bad value (%s)\n", argv[i]);
@@ -511,11 +502,6 @@ main (int argc, char **argv)
 		if (arguments.brightness)
 		{
 			double dblval;
-			if ((++i) >= argc)
-			{
-				fprintf(stderr, "Missing value\n");
-				continue;
-			}
 			if (sscanf(argv[i], "%lf", &dblval) == 0)
 			{
 				fprintf(stderr, "Bad value (%s)\n", argv[i]);
@@ -526,11 +512,6 @@ main (int argc, char **argv)
 		if (arguments.gamma)
 		{
 			double dblval;
-			if ((++i) >= argc)
-			{
-				fprintf(stderr, "Missing value\n");
-				continue;
-			}
 			if (sscanf(argv[i], "%lf", &dblval) == 0)
 			{
 				fprintf(stderr, "Bad value (%s)\n", argv[i]);
