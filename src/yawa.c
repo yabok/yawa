@@ -93,6 +93,17 @@ parse_opt (int key, char *arg, struct argp_state *state)
 			arguments->tint = true;
 			arguments->color = arg;
 			break;
+
+		case 'v':
+			arguments->flipv = true;
+			break;
+		case 'h':
+			arguments->fliph = true;
+			break;
+		case 'd':
+			arguments->flipd = true;
+			break;
+
 		case 'A':
 			arguments->alpha = true;
 			val = strtol(arg, &endptr, 10);
