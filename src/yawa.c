@@ -29,17 +29,14 @@
 #include <bsd/string.h>
 
 #include "yawa.h"
+#include "utils.h"
 #include "config.h"
-
 
 /* Order of parameters: KEY, ARG, STATE. */
 static error_t
 parse_opt (int key, char *arg, struct argp_state *state)
 {
 	struct arguments *arguments = state->input;
-	char *endptr;
-	long val;
-	errno = 0;
 
 	switch (key) {
 		case 'a':
@@ -48,78 +45,97 @@ parse_opt (int key, char *arg, struct argp_state *state)
 			        sizeof(arguments->add_color[0]) - 1);
 			num_add_colors += 1;
 			break;
+
 		case 'g':
 			arguments->gradient = true;
-			val = strtol(arg, &endptr, 10);
-			arguments->angle = (int)val;
-
-			if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
-			    || (errno != 0 && val == 0))
-			{
-				perror("strtol");
-				exit(-2);
-			}
-
-			if (endptr == arg)
-			{
-				fprintf(stderr, "Valid gradiant angle not found\n");
-				exit(-2);
-			}
+			arguments->angle = parse_int(arg, "gradient angle");
 			break;
+
 		case 'c':
 			arguments->clear = true;
 			break;
+
+
 		case 's':
 			arguments->solid = true;
-			arguments->color = arg;
+			arguments->solid_color = arg;
 			break;
+
+
 		case 'C':
 			arguments->center = true;
 			arguments->image = arg;
 			break;
+
 		case 't':
 			arguments->tile = true;
 			arguments->image = arg;
 			break;
+
 		case 'f':
 			arguments->full = true;
 			arguments->image = arg;
 			break;
+
 		case 'F':
 			arguments->fill = true;
 			arguments->image = arg;
 			break;
+
+
 		case 'T':
 			arguments->tint = true;
-			arguments->color = arg;
+			arguments->tint_color = arg;
+			break;
+
+		case 'b':
+			arguments->blur = true;
+			arguments->blur_radius = parse_int(arg, "blur radius");
+			break;
+
+		case 'S':
+			arguments->sharpen = true;
+			arguments->sharpen_radius = parse_int(arg, "sharpen radius");
+			break;
+
+		case 'o':
+			arguments->contrast = true;
+			arguments->contrast_amount = parse_int(arg, "contrast amount");
+			break;
+
+		case 'B':
+			arguments->brightness = true;
+			arguments->brightness_amount = parse_int(arg, "brightness amount");
+			break;
+
+		case 'G':
+			arguments->gamma = true;
+			arguments->gamma_amount = parse_int(arg, "gamma amount");
 			break;
 
 		case 'v':
 			arguments->flipv = true;
 			break;
+
 		case 'h':
 			arguments->fliph = true;
 			break;
+
 		case 'd':
 			arguments->flipd = true;
 			break;
 
+
 		case 'A':
 			arguments->alpha = true;
-			val = strtol(arg, &endptr, 10);
-			arguments->alpha_amount = (int)val;
-
-			if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
-			    || (errno != 0 && val == 0)) {
-				perror("strtol");
-				exit(-2);
-			}
-
-			if (endptr == arg) {
-				fprintf(stderr, "Valid alpha amount not found\n");
-				exit(-2);
-			}
+			arguments->alpha_amount = parse_int(arg, "alpha amount");
 			break;
+
+		case 'w':
+			arguments->write = true;
+			arguments->write_file = arg;
+			break;
+
 		default:
 			return ARGP_ERR_UNKNOWN;
 	}
@@ -311,10 +327,11 @@ int
 main (int argc, char **argv)
 {
 	struct arguments arguments = {
-	    "", "", 0, 0, false, false, false, false, false,
-	    false, false, false, false, false, false, false,
-	    false, false, false, false, false, false, false,
-	    {{0}} // add_color array
+		"", "", {{0}}, "", "", 0, 0, 0, 0, 0, 0, 0,
+		false, false, false, false, false, false,
+		false, false, false, false, false, false,
+		false, false, false, false, false, false,
+		false,
 	};
 
 	/* Where the magic happens */
@@ -380,9 +397,9 @@ main (int argc, char **argv)
 		if (arguments.solid)
 		{
 			Color c;
-			if (parse_color(arguments.color, &c, alpha) == 0)
+			if (parse_color(arguments.solid_color, &c, alpha) == 0)
 			{
-				fprintf(stderr, "Bad color (%s)\n", arguments.color);
+				fprintf(stderr, "Bad color (%s)\n", arguments.solid_color);
 				exit(-2);
 			}
 			imlib_context_set_color(c.r, c.g, c.b, c.a);
@@ -451,7 +468,7 @@ main (int argc, char **argv)
 			DATA8 r[256], g[256], b[256], a[256];
 			int j;
 
-			if (parse_color(arguments.color, &c, 255) == 0)
+			if (parse_color(arguments.tint_color, &c, 255) == 0)
 			{
 				fprintf(stderr, "Bad color\n");
 				exit(-2);

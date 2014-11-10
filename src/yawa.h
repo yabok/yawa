@@ -1,5 +1,8 @@
 #ifndef YAWA_H
 #define YAWA_H
+#include <Imlib2.h>
+#include <argp.h>
+
 #include "config.h"
 
 typedef struct
@@ -8,12 +11,14 @@ typedef struct
 } Color;
 
 typedef enum
-{ Full, Fill, Center, Tile } ImageMode;
+{
+	Full, Fill, Center, Tile
+} ImageMode;
 
-int set_root_atoms (Pixmap pixmap);
+int set_root_atoms(Pixmap pixmap);
 bool parse_color (char *arg, Color *c, int a);
-int load_image (ImageMode mode, const char *arg, int rootW, int rootH, int alpha,
-                Imlib_Image rootimg);
+int load_image(ImageMode mode, const char *arg, int rootW, int rootH, int alpha,
+               Imlib_Image rootimg);
 
 static char doc[] = "yawa -- Yet Another Wallpaper Application";
 const char *argp_program_version = PACKAGE_STRING;
@@ -22,8 +27,18 @@ const char *argp_program_bug_address = "<" PACKAGE_BUGREPORT ">";
 static int num_add_colors;
 struct arguments {
 	char *image;
-	char *color;
+	char *write_file;
+
+	char add_color[8][8];
+	char *solid_color;
+	char *tint_color;
+
 	int angle;
+	int blur_radius;
+	int sharpen_radius;
+	int contrast_amount;
+	int brightness_amount;
+	int gamma_amount;
 	int alpha_amount;
 
 	bool add: 1;
@@ -34,18 +49,17 @@ struct arguments {
 	bool tile: 1;
 	bool full: 1;
 	bool fill: 1;
-	bool tint: 1;
-	bool blur: 1;
-	bool sharpen: 1;
-	bool contrast: 1;
-	bool brightness: 1;
-	bool gamma: 1;
-	bool flipv: 1;
-	bool fliph: 1;
+	bool tint;
+	bool blur;
+	bool sharpen;
+	bool contrast;
+	bool brightness;
+	bool gamma;
+	bool flipv;
+	bool fliph;
 	bool flipd;
 	bool alpha;
 	bool write;
-	char add_color[9][9];
 };
 
 /* Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}. */
@@ -71,7 +85,7 @@ static struct argp_option options[] =
 	{"blur",       'b',   "RADIUS", 0, "Blur the current image", 4},                      // Not implemented
 	{"sharpen",    'S',   "RADIUS", 0, "Sharpen the current image", 4},                   // Not implemented
 	{"contrast",   'o',   "AMOUNT", 0, "Adjust the contrast of the current image", 4},    // Not implemented
-	{"brightness", 'G',   "AMOUNT", 0, "Adjust the bightness of the current image", 4},   // Not implemented
+	{"brightness", 'B',   "AMOUNT", 0, "Adjust the bightness of the current image", 4},   // Not implemented
 	{"gamma",      'G',   "AMOUNT", 0, "Adjust the gamma level of the current image", 4}, // Not implemented
 	{"flipv",      'v',          0, 0, "Flip the current image vertically", 4},           // Not implemented
 	{"fliph",      'h',          0, 0, "Flip the current image horizontally", 4},         // Not implemented
