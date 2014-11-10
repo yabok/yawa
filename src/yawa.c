@@ -135,7 +135,7 @@ static int screen;
 
 // Adapted from fluxbox' bsetroot
 int
-setRootAtoms (Pixmap pixmap)
+set_root_atoms (Pixmap pixmap)
 {
 	Atom atom_root, atom_eroot, type;
 	unsigned char *data_root, *data_eroot;
@@ -549,7 +549,7 @@ main (int argc, char **argv)
 		imlib_free_image();
 		imlib_free_color_range();
 
-		if (setRootAtoms(pixmap) == 0)
+		if (set_root_atoms(pixmap) == 0)
 			fprintf(stderr, "Couldn't create atoms...\n");
 
 		XKillClient(display, AllTemporary);

@@ -10,8 +10,7 @@ typedef struct
 typedef enum
 { Full, Fill, Center, Tile } ImageMode;
 
-int setRootAtoms (Pixmap pixmap);
-int getHex (char c);
+int set_root_atoms (Pixmap pixmap);
 int parse_color (char *arg, PColor c, int a);
 int load_image (ImageMode mode, const char *arg, int rootW, int rootH, int alpha,
                 Imlib_Image rootimg);
