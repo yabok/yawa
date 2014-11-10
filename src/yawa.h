@@ -16,7 +16,6 @@ typedef enum
 } ImageMode;
 
 int set_root_atoms(Pixmap pixmap);
-bool parse_color (char *arg, Color *c, int a);
 int load_image(ImageMode mode, const char *arg, int rootW, int rootH, int alpha,
                Imlib_Image rootimg);
 
