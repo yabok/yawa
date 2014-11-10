@@ -19,10 +19,6 @@ int set_root_atoms(Pixmap pixmap);
 int load_image(ImageMode mode, const char *arg, int rootW, int rootH, int alpha,
                Imlib_Image rootimg);
 
-static char doc[] = "yawa -- Yet Another Wallpaper Application";
-const char *argp_program_version = PACKAGE_STRING;
-const char *argp_program_bug_address = "<" PACKAGE_BUGREPORT ">";
-
 static int num_add_colors;
 struct arguments {
 	char *image;

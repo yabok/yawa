@@ -142,6 +142,10 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	return 0;
 }
 
+static char doc[] = "yawa -- Yet Another Wallpaper Application";
+const char *argp_program_version = PACKAGE_STRING;
+const char *argp_program_bug_address = "<" PACKAGE_BUGREPORT ">";
+
 /* The ARGP structure itself. */
 static struct argp argp = {options, parse_opt, "", doc, NULL, NULL, 0};
 
