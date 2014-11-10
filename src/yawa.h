@@ -33,25 +33,29 @@ struct arguments {
 	char *write_file;
 
 	char add_color[8][8];
+
 	char *solid_color;
 	char *tint_color;
 
-	int angle;
-	unsigned int blur_radius;
-	unsigned int sharpen_radius;
-	unsigned int contrast_amount;
-	unsigned int brightness_amount;
-	unsigned int gamma_amount;
-	unsigned int alpha_amount;
+	signed   angle;
+	unsigned blur_radius;
+	unsigned sharpen_radius;
+	unsigned contrast_amount;
+	unsigned brightness_amount;
+	unsigned gamma_amount;
+	unsigned alpha_amount;
 
 	bool add: 1;
 	bool gradient: 1;
 	bool clear: 1;
+
 	bool solid: 1;
+
 	bool center: 1;
 	bool tile: 1;
 	bool full: 1;
 	bool fill: 1;
+
 	bool tint;
 	bool blur;
 	bool sharpen;
@@ -61,6 +65,7 @@ struct arguments {
 	bool flipv;
 	bool fliph;
 	bool flipd;
+
 	bool alpha;
 	bool write;
 };
