@@ -90,27 +90,27 @@ parse_opt(int key, char *arg, struct argp_state *state)
 
 		case 'b':
 			arguments->blur = true;
-			arguments->blur_radius = parse_int(arg, "blur radius");
+			arguments->blur_radius = parse_uint(arg, "blur radius");
 			break;
 
 		case 'S':
 			arguments->sharpen = true;
-			arguments->sharpen_radius = parse_int(arg, "sharpen radius");
+			arguments->sharpen_radius = parse_uint(arg, "sharpen radius");
 			break;
 
 		case 'o':
 			arguments->contrast = true;
-			arguments->contrast_amount = parse_int(arg, "contrast amount");
+			arguments->contrast_amount = parse_uint(arg, "contrast amount");
 			break;
 
 		case 'B':
 			arguments->brightness = true;
-			arguments->brightness_amount = parse_int(arg, "brightness amount");
+			arguments->brightness_amount = parse_uint(arg, "brightness amount");
 			break;
 
 		case 'G':
 			arguments->gamma = true;
-			arguments->gamma_amount = parse_int(arg, "gamma amount");
+			arguments->gamma_amount = parse_uint(arg, "gamma amount");
 			break;
 
 		case 'v':
@@ -128,7 +128,7 @@ parse_opt(int key, char *arg, struct argp_state *state)
 
 		case 'A':
 			arguments->alpha = true;
-			arguments->alpha_amount = parse_int(arg, "alpha amount");
+			arguments->alpha_amount = parse_uint(arg, "alpha amount");
 			break;
 
 		case 'w':

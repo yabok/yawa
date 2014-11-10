@@ -29,12 +29,12 @@ struct arguments {
 	char *tint_color;
 
 	int angle;
-	int blur_radius;
-	int sharpen_radius;
-	int contrast_amount;
-	int brightness_amount;
-	int gamma_amount;
-	int alpha_amount;
+	unsigned int blur_radius;
+	unsigned int sharpen_radius;
+	unsigned int contrast_amount;
+	unsigned int brightness_amount;
+	unsigned int gamma_amount;
+	unsigned int alpha_amount;
 
 	bool add: 1;
 	bool gradient: 1;

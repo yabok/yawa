@@ -33,6 +33,30 @@ parse_int(char *string, char *arg)
 	return (int)val;
 }
 
+unsigned int
+parse_uint(char *string, char *arg)
+{
+	errno = 0;
+	char *endptr;
+	unsigned long val = strtoul(string, &endptr, 10);
+	if (errno != 0)
+	{
+		char *errormsg;
+		asprintf(&errormsg, "parse_uint: failed to parse %s", arg);
+
+		perror(errormsg);
+		free(errormsg);
+		exit(-2);
+	}
+
+	if (endptr == string)
+	{
+		fprintf(stderr, "Valid %s not found\n", arg);
+		exit(-2);
+	}
+	return (unsigned int)val;
+}
+
 bool
 parse_color(char *hex, Color *c, int a)
 {
