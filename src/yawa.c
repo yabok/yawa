@@ -34,7 +34,7 @@
 
 /* Order of parameters: KEY, ARG, STATE. */
 static error_t
-parse_opt (int key, char *arg, struct argp_state *state)
+parse_opt(int key, char *arg, struct argp_state *state)
 {
 	struct arguments *arguments = state->input;
 
@@ -155,7 +155,7 @@ static int screen;
 
 // Adapted from fluxbox' bsetroot
 int
-set_root_atoms (Pixmap pixmap)
+set_root_atoms(Pixmap pixmap)
 {
 	Atom atom_root, atom_eroot, type;
 	unsigned char *data_root, *data_eroot;
@@ -204,7 +204,7 @@ set_root_atoms (Pixmap pixmap)
 }
 
 int
-load_image (ImageMode mode, const char *arg, int rootW, int rootH,
+load_image(ImageMode mode, const char *arg, int rootW, int rootH,
             int alpha, Imlib_Image rootimg)
 {
 	int imgW, imgH, o;
@@ -282,7 +282,7 @@ load_image (ImageMode mode, const char *arg, int rootW, int rootH,
 }
 
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
 	struct arguments arguments = {
 		"", "", {{0}}, "", "", 0, 0, 0, 0, 0, 0, 0,

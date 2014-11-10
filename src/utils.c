@@ -34,7 +34,7 @@ parse_int(char *string, char *arg)
 }
 
 bool
-parse_color (char *hex, Color *c, int a)
+parse_color(char *hex, Color *c, int a)
 {
 	if ((strlen(hex) != 7) && (strlen(hex) != 9))
 		return false;
