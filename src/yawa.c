@@ -32,7 +32,7 @@
 #include "utils.h"
 #include "config.h"
 
-/* Order of parameters: KEY, ARG, STATE. */
+// Order of parameters: KEY, ARG, STATE.
 static error_t
 parse_opt(int key, char *arg, struct argp_state *state)
 {
@@ -146,15 +146,14 @@ static char doc[] = "yawa -- Yet Another Wallpaper Application";
 const char *argp_program_version = PACKAGE_STRING;
 const char *argp_program_bug_address = "<" PACKAGE_BUGREPORT ">";
 
-/* The ARGP structure itself. */
+// The ARGP structure itself.
 static struct argp argp = {options, parse_opt, "", doc, NULL, NULL, 0};
 
 // Globals:
 static Display *display;
 static int screen;
 
-// Adapted from fluxbox' bsetroot
-int
+signed
 set_root_atoms(Pixmap pixmap)
 {
 	Atom atom_root, atom_eroot, type;
@@ -203,7 +202,7 @@ set_root_atoms(Pixmap pixmap)
 	return 1;
 }
 
-int
+signed
 load_image(ImageMode mode, const char *arg, int rootW, int rootH,
             int alpha, Imlib_Image rootimg)
 {
@@ -281,7 +280,7 @@ load_image(ImageMode mode, const char *arg, int rootW, int rootH,
 	return 1;
 }
 
-int
+signed
 main(int argc, char **argv)
 {
 	struct arguments arguments = {
@@ -292,7 +291,7 @@ main(int argc, char **argv)
 		false,
 	};
 
-	/* Where the magic happens */
+	// Where the magic happens
 	argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
 	Visual *vis;

@@ -15,9 +15,17 @@ typedef enum
 	Full, Fill, Center, Tile
 } ImageMode;
 
-int set_root_atoms(Pixmap pixmap);
-int load_image(ImageMode mode, const char *arg, int rootW, int rootH, int alpha,
-               Imlib_Image rootimg);
+/// Prototypes
+
+signed
+set_root_atoms(Pixmap pixmap);
+
+signed
+load_image(ImageMode mode, const char *arg, int rootW, int rootH,
+           int alpha, Imlib_Image rootimg);
+
+
+/// Argument parsing
 
 static int num_add_colors;
 struct arguments {
@@ -57,7 +65,7 @@ struct arguments {
 	bool write;
 };
 
-/* Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}. */
+// Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}.
 static struct argp_option options[] =
 {
 	{0,              0,          0, 0, "Gradients:", 1},
@@ -82,9 +90,9 @@ static struct argp_option options[] =
 	{"contrast",   'o',   "AMOUNT", 0, "Adjust the contrast of the current image", 4},    // Not implemented
 	{"brightness", 'B',   "AMOUNT", 0, "Adjust the bightness of the current image", 4},   // Not implemented
 	{"gamma",      'G',   "AMOUNT", 0, "Adjust the gamma level of the current image", 4}, // Not implemented
-	{"flipv",      'v',          0, 0, "Flip the current image vertically", 4},           // Not implemented
-	{"fliph",      'h',          0, 0, "Flip the current image horizontally", 4},         // Not implemented
-	{"flipd",      'd',          0, 0, "Flip the current image diagonally", 4},           // Not implemented
+	{"flipv",      'v',          0, 0, "Flip the current image vertically", 4},
+	{"fliph",      'h',          0, 0, "Flip the current image horizontally", 4},
+	{"flipd",      'd',          0, 0, "Flip the current image diagonally", 4},
 
 	{0,              0,          0, 0, "Misc:", -1},
 	{"alpha",      'A',   "AMOUNT", 0, "Adjust alpha level for colors and images", -1},

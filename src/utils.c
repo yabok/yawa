@@ -9,7 +9,7 @@
 #include "yawa.h"
 #include "utils.h"
 
-int
+signed
 parse_int(char *string, char *arg)
 {
 	errno = 0;
@@ -33,7 +33,7 @@ parse_int(char *string, char *arg)
 	return (int)val;
 }
 
-unsigned int
+unsigned
 parse_uint(char *string, char *arg)
 {
 	errno = 0;
