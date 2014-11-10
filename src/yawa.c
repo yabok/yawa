@@ -183,11 +183,11 @@ set_root_atoms (Pixmap pixmap)
 	return 1;
 }
 
-int
-parse_color (char *hex, PColor c, int a)
+bool
+parse_color (char *hex, Color *c, int a)
 {
 	if ((strlen(hex) != 7) && (strlen(hex) != 9))
-		return 0;
+		return false;
 
 	int len;
 	if (strlen(hex) == 9) {
@@ -226,7 +226,7 @@ parse_color (char *hex, PColor c, int a)
 		c->a = a;
 	}
 
-	return 1;
+	return true;
 }
 
 int
