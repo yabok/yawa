@@ -165,19 +165,16 @@ set_root_atoms(Pixmap pixmap)
 	atom_eroot = XInternAtom(display, "ESETROOT_PMAP_ID", True);
 
 	// doing this to clean up after old background
-	if (atom_root != None && atom_eroot != None)
-	{
+	if (atom_root != None && atom_eroot != None) {
 		XGetWindowProperty(display, RootWindow(display, screen),
 		                   atom_root, 0L, 1L, False, AnyPropertyType,
 		                   &type, &format, &length, &after, &data_root);
-		if (type == XA_PIXMAP)
-		{
+		if (type == XA_PIXMAP) {
 			XGetWindowProperty(display, RootWindow(display, screen),
 			                   atom_eroot, 0L, 1L, False, AnyPropertyType,
 			                   &type, &format, &length, &after, &data_eroot);
 			if (data_root && data_eroot && type == XA_PIXMAP &&
-			    *(data_root) == *(data_eroot))
-			{
+			    *(data_root) == *(data_eroot)) {
 				XKillClient(display, *(data_root));
 			}
 		}
@@ -186,8 +183,7 @@ set_root_atoms(Pixmap pixmap)
 	atom_root = XInternAtom(display, "_XROOTPMAP_ID", False);
 	atom_eroot = XInternAtom(display, "ESETROOT_PMAP_ID", False);
 
-	if (atom_root == None || atom_eroot == None)
-	{
+	if (atom_root == None || atom_eroot == None) {
 		return 0;
 	}
 
@@ -209,14 +205,14 @@ load_image(ImageMode mode, const char *arg, int rootW, int rootH,
 	int imgW, imgH, o;
 	Imlib_Image buffer = imlib_load_image(arg);
 
-	if (!buffer)
+	if (!buffer) {
 		return 0;
+	}
 
 	imlib_context_set_image(buffer);
 	imgW = imlib_image_get_width(), imgH = imlib_image_get_height();
 
-	if (alpha < 255)
-	{
+	if (alpha < 255) {
 		// Create alpha-override mask
 		imlib_image_set_has_alpha(1);
 		Imlib_Color_Modifier modifier = imlib_create_color_modifier();
@@ -233,13 +229,10 @@ load_image(ImageMode mode, const char *arg, int rootW, int rootH,
 	}
 
 	imlib_context_set_image(rootimg);
-	if (mode == Fill)
-	{
+	if (mode == Fill) {
 		imlib_blend_image_onto_image(buffer, 0, 0, 0, imgW, imgH,
 		                             0, 0, rootW, rootH);
-	}
-	else if (mode == Full)
-	{
+	} else if (mode == Full) {
 		double aspect = ((double) rootW) / imgW;
 		int top, left;
 		if ((int) (imgH * aspect) > rootH)
@@ -249,24 +242,21 @@ load_image(ImageMode mode, const char *arg, int rootW, int rootH,
 		imlib_blend_image_onto_image(buffer, 0, 0, 0, imgW, imgH,
 		                             left, top, (int) (imgW * aspect),
 		                             (int) (imgH * aspect));
-	}
-	else
-	{
+	} else {
 		int left = (rootW - imgW) / 2, top = (rootH - imgH) / 2;
 
-		if (mode == Tile)
-		{
+		if (mode == Tile) {
 			int x, y;
 			for (; left > 0; left -= imgW);
 			for (; top > 0; top -= imgH);
 
-			for (x = left; x < rootW; x += imgW)
-				for (y = top; y < rootH; y += imgH)
+			for (x = left; x < rootW; x += imgW) {
+				for (y = top; y < rootH; y += imgH) {
 					imlib_blend_image_onto_image(buffer, 0, 0, 0, imgW, imgH,
-					                              x, y, imgW, imgH);
-		}
-		else
-		{
+					                             x, y, imgW, imgH);
+				}
+			}
+		} else {
 			imlib_blend_image_onto_image(buffer, 0, 0, 0, imgW, imgH,
 			                             left, top, imgW, imgH);
 		}
@@ -305,8 +295,7 @@ main(int argc, char **argv)
 	Imlib_Color_Modifier modifier = NULL;
 	_display = XOpenDisplay(NULL);
 
-	for (screen = 0; screen < ScreenCount(_display); screen++)
-	{
+	for (screen = 0; screen < ScreenCount(_display); screen++) {
 		display = XOpenDisplay(NULL);
 
 		context = imlib_context_new();
@@ -338,43 +327,37 @@ main(int argc, char **argv)
 		imlib_context_set_dither(1);
 		imlib_context_set_blend(1);
 
-		if (arguments.alpha)
+		if (arguments.alpha) {
 			alpha = arguments.alpha;
-		else
+		} else {
 			alpha = 255;
+		}
 
-		if (modifier != NULL)
-		{
+		if (modifier != NULL) {
 			imlib_apply_color_modifier();
 			imlib_free_color_modifier();
 		}
 		modifier = imlib_create_color_modifier();
 		imlib_context_set_color_modifier(modifier);
 
-		if (arguments.solid)
-		{
+		if (arguments.solid) {
 			Color c;
-			if (parse_color(arguments.solid_color, &c, alpha) == 0)
-			{
+			if (parse_color(arguments.solid_color, &c, alpha) == 0) {
 				fprintf(stderr, "Bad color (%s)\n", arguments.solid_color);
 				exit(-2);
 			}
 			imlib_context_set_color(c.r, c.g, c.b, c.a);
 			imlib_image_fill_rectangle(0, 0, width, height);
 		}
-		if (arguments.clear)
-		{
+		if (arguments.clear) {
 			imlib_free_color_range();
 			imlib_context_set_color_range(imlib_create_color_range());
 		}
 		// TODO: Add back -addd
-		if (arguments.add)
-		{
-			for (i = 0; i < num_add_colors; i++)
-			{
+		if (arguments.add) {
+			for (i = 0; i < num_add_colors; i++) {
 				Color c;
-				if (parse_color(arguments.add_color[i], &c, alpha) == 0)
-				{
+				if (parse_color(arguments.add_color[i], &c, alpha) == 0) {
 					fprintf(stderr, "Bad color (%s)\n", arguments.add_color[i]);
 					exit(-2);
 				}
@@ -382,59 +365,47 @@ main(int argc, char **argv)
 				imlib_add_color_to_color_range(1);
 			}
 		}
-		if (arguments.gradient)
-		{
+		if (arguments.gradient) {
 			imlib_image_fill_color_range_rectangle(0, 0, width, height, arguments.angle);
 		}
-		if (arguments.fill)
-		{
-			if (load_image(Fill, arguments.image, width, height, alpha, image) == 0)
-			{
+		if (arguments.fill) {
+			if (load_image(Fill, arguments.image, width, height, alpha, image) == 0) {
 				fprintf(stderr, "Bad image (%s)\n", arguments.image);
 				continue;
 			}
 		}
-		if (arguments.full)
-		{
-			if (load_image(Full, arguments.image, width, height, alpha, image) == 0)
-			{
+		if (arguments.full) {
+			if (load_image(Full, arguments.image, width, height, alpha, image) == 0) {
 				fprintf(stderr, "Bad image (%s)\n", arguments.image);
 				continue;
 			}
 		}
-		if (arguments.tile)
-		{
-			if (load_image(Tile, arguments.image, width, height, alpha, image) == 0)
-			{
+		if (arguments.tile) {
+			if (load_image(Tile, arguments.image, width, height, alpha, image) == 0) {
 				fprintf(stderr, "Bad image (%s)\n", arguments.image);
 				continue;
 			}
 		}
-		if (arguments.center)
-		{
-			if (load_image(Center, arguments.image, width, height, alpha, image) == 0)
-			{
+		if (arguments.center) {
+			if (load_image(Center, arguments.image, width, height, alpha, image) == 0) {
 				fprintf(stderr, "Bad image (%s)\n", arguments.image);
 				continue;
 			}
 		}
 
-		if (arguments.tint)
-		{
+		if (arguments.tint) {
 			Color c;
 			DATA8 r[256], g[256], b[256], a[256];
 			int j;
 
-			if (parse_color(arguments.tint_color, &c, 255) == 0)
-			{
+			if (parse_color(arguments.tint_color, &c, 255) == 0) {
 				fprintf(stderr, "Bad color\n");
 				exit(-2);
 			}
 
 			imlib_get_color_modifier_tables(r, g, b, a);
 
-			for (j = 0; j < 256; j++)
-			{
+			for (j = 0; j < 256; j++) {
 				r[j] = (DATA8) (((double) r[j] / 255.0) * (double) c.r);
 				g[j] = (DATA8) (((double) g[j] / 255.0) * (double) c.g);
 				b[j] = (DATA8) (((double) b[j] / 255.0) * (double) c.b);
@@ -442,78 +413,63 @@ main(int argc, char **argv)
 
 			imlib_set_color_modifier_tables(r, g, b, a);
 		}
-		if (arguments.blur)
-		{
+		if (arguments.blur) {
 			int intval;
-			if (sscanf(argv[i], "%i", &intval) == 0)
-			{
+			if (sscanf(argv[i], "%i", &intval) == 0) {
 				fprintf(stderr, "Bad value (%s)\n", argv[i]);
 				continue;
 			}
 
 			imlib_image_blur(intval);
 		}
-		if (arguments.sharpen)
-		{
+		if (arguments.sharpen) {
 			int intval;
-			if (sscanf(argv[i], "%i", &intval) == 0)
-			{
+			if (sscanf(argv[i], "%i", &intval) == 0) {
 				fprintf(stderr, "Bad value (%s)\n", argv[i]);
 				continue;
 			}
 			imlib_image_sharpen(intval);
 		}
-		if (arguments.contrast)
-		{
+		if (arguments.contrast) {
 			double dblval;
-			if (sscanf(argv[i], "%lf", &dblval) == 0)
-			{
+			if (sscanf(argv[i], "%lf", &dblval) == 0) {
 				fprintf(stderr, "Bad value (%s)\n", argv[i]);
 				continue;
 			}
 			imlib_modify_color_modifier_contrast(dblval);
 		}
-		if (arguments.brightness)
-		{
+		if (arguments.brightness) {
 			double dblval;
-			if (sscanf(argv[i], "%lf", &dblval) == 0)
-			{
+			if (sscanf(argv[i], "%lf", &dblval) == 0) {
 				fprintf(stderr, "Bad value (%s)\n", argv[i]);
 				continue;
 			}
 			imlib_modify_color_modifier_brightness(dblval);
 		}
-		if (arguments.gamma)
-		{
+		if (arguments.gamma) {
 			double dblval;
-			if (sscanf(argv[i], "%lf", &dblval) == 0)
-			{
+			if (sscanf(argv[i], "%lf", &dblval) == 0) {
 				fprintf(stderr, "Bad value (%s)\n", argv[i]);
 				continue;
 			}
 			imlib_modify_color_modifier_gamma(dblval);
 		}
 
-		if (arguments.flipv)
-		{
+		if (arguments.flipv) {
 			imlib_image_flip_vertical();
 		}
-		if (arguments.fliph)
-		{
+		if (arguments.fliph) {
 			imlib_image_flip_horizontal();
 		}
-		if (arguments.flipd)
-		{
+		if (arguments.flipd) {
 			imlib_image_flip_diagonal();
 		}
 
-		if (arguments.write)
-		{
+		if (arguments.write) {
 			imlib_save_image(argv[i]);
 		}
 
-		if (modifier != NULL)
-		{
+		if (modifier != NULL) {
 			imlib_context_set_color_modifier(modifier);
 			imlib_apply_color_modifier();
 			imlib_free_color_modifier();
@@ -523,8 +479,9 @@ main(int argc, char **argv)
 		imlib_free_image();
 		imlib_free_color_range();
 
-		if (set_root_atoms(pixmap) == 0)
+		if (set_root_atoms(pixmap) == 0) {
 			fprintf(stderr, "Couldn't create atoms...\n");
+		}
 
 		XKillClient(display, AllTemporary);
 		XSetCloseDownMode(display, RetainTemporary);

@@ -15,8 +15,7 @@ parse_int(char *string, char *arg)
 	errno = 0;
 	char *endptr;
 	long val = strtol(string, &endptr, 10);
-	if (errno != 0)
-	{
+	if (errno != 0) {
 		char *errormsg;
 		asprintf(&errormsg, "parse_int: failed to parse %s", arg);
 
@@ -25,8 +24,7 @@ parse_int(char *string, char *arg)
 		exit(-2);
 	}
 
-	if (endptr == string)
-	{
+	if (endptr == string) {
 		fprintf(stderr, "Valid %s not found\n", arg);
 		exit(-2);
 	}
@@ -39,8 +37,7 @@ parse_uint(char *string, char *arg)
 	errno = 0;
 	char *endptr;
 	unsigned long val = strtoul(string, &endptr, 10);
-	if (errno != 0)
-	{
+	if (errno != 0) {
 		char *errormsg;
 		asprintf(&errormsg, "parse_uint: failed to parse %s", arg);
 
@@ -49,8 +46,7 @@ parse_uint(char *string, char *arg)
 		exit(-2);
 	}
 
-	if (endptr == string)
-	{
+	if (endptr == string) {
 		fprintf(stderr, "Valid %s not found\n", arg);
 		exit(-2);
 	}
@@ -60,8 +56,9 @@ parse_uint(char *string, char *arg)
 bool
 parse_color(char *hex, Color *c, int a)
 {
-	if ((strlen(hex) != 7) && (strlen(hex) != 9))
+	if ((strlen(hex) != 7) && (strlen(hex) != 9)) {
 		return false;
+	}
 
 	int len;
 	if (strlen(hex) == 9) {

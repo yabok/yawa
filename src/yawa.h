@@ -71,8 +71,7 @@ struct arguments {
 };
 
 // Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}.
-static struct argp_option options[] =
-{
+static struct argp_option options[] = {
 	{0,              0,          0, 0, "Gradients:", 1},
 	{"add",        'a',    "COLOR", 0, "Add color to range using distance 1", 1},
 	// TODO: Figure out what to do about `-addd <color> <distance>
@@ -104,4 +103,5 @@ static struct argp_option options[] =
 	{"write",      'w', "FILENAME", 0, "Write the current image to a file", -1},          // Not implemented
 	{0,              0,          0, 0,                                   0,  0}
 };
+
 #endif
