@@ -1,7 +1,7 @@
 ===============
  yawa |travis|
 ===============
-.. |travis| image:: https://travis-ci.org/kyrias/yawa.svg?branch=coverity_scan
+.. |travis| image:: https://travis-ci.org/kyrias/yawa.svg
    :alt: Travis Build Status
    :target: https://travis-ci.org/kyrias/yawa
 -----------------------------------
