@@ -4,8 +4,10 @@ project (yawa)
 set(PACKAGE_NAME "yawa")
 set(PACKAGE_VERSION "0.0.1")
 set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
-set(PACKAGE_DESCRIPTION "yet another wallpaper application")
+set(PACKAGE_DESCRIPTION "Yet Another Wallpaper Application")
 set(PACKAGE_BUGREPORT "johannes@kyriasis.com")
+
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 configure_file(
 	${CMAKE_SOURCE_DIR}/src/config.h.in
@@ -19,3 +21,4 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory("src")
+add_subdirectory("doc")

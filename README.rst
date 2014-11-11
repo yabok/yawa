@@ -19,6 +19,7 @@ Dependencies
 * glibc (argp argument parsing)
 * imlib2
 * libx11
+* sphinx (man page)
 
 Building
 ========
