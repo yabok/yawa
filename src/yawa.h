@@ -27,12 +27,14 @@ load_image(ImageMode mode, const char *arg, signed rootW, signed rootH,
 
 /// Argument parsing
 
-static signed num_add_colors;
+static signed num_add_colors = 0;
+static signed num_distances = 0;
 struct arguments {
 	char *image;
 	char *write_file;
 
-	char add_color[8][8];
+	char   add_color[8][8];
+	signed distance[8];
 
 	char *solid_color;
 	char *tint_color;
@@ -73,8 +75,9 @@ struct arguments {
 // Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}.
 static struct argp_option options[] = {
 	{0,              0,          0, 0, "Gradients:", 1},
-	{"add",        'a',    "COLOR", 0, "Add color to range using distance 1", 1},
-	// TODO: Figure out what to do about `-addd <color> <distance>
+	{"add",        'a',    "COLOR", 0, "Add color to range", 1},
+	{"distance",   'D', "DISTANCE", 0, "Distance to use for adding color to range. "
+	                                   "Defaults to 1 for each color", 1},
 	{"gradient",   'g',    "ANGLE", 0, "Render gradient using specified angle", 1},
 	{"clear",      'c',          0, 0, "Clear the color range", 1},
 

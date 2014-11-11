@@ -46,6 +46,13 @@ parse_opt(signed key, char *arg, struct argp_state *state)
 			num_add_colors += 1;
 			break;
 
+		case 'D':
+			;
+			signed distance = parse_int(arg, "add distance");
+			arguments->distance[num_distances] = distance;
+			num_distances += 1;
+			break;
+
 		case 'g':
 			arguments->gradient = true;
 			arguments->angle = parse_int(arg, "gradient angle");
@@ -274,12 +281,16 @@ signed
 main(signed argc, char **argv)
 {
 	struct arguments arguments = {
-		"", "", {{0}}, "", "", 0, 0, 0, 0, 0, 0, 0,
+		"", "", {{0}}, {0}, "", "", 0, 0, 0, 0, 0, 0, 0,
 		false, false, false, false, false, false,
 		false, false, false, false, false, false,
 		false, false, false, false, false, false,
 		false,
 	};
+
+	for(unsigned long i = 0; i < (sizeof arguments.distance)/(sizeof (signed)); i++) {
+		arguments.distance[i] = 1;
+	}
 
 	// Where the magic happens
 	argp_parse(&argp, argc, argv, 0, 0, &arguments);
@@ -353,7 +364,6 @@ main(signed argc, char **argv)
 			imlib_free_color_range();
 			imlib_context_set_color_range(imlib_create_color_range());
 		}
-		// TODO: Add back -addd
 		if (arguments.add) {
 			for (i = 0; i < num_add_colors; i++) {
 				Color c;
@@ -362,7 +372,7 @@ main(signed argc, char **argv)
 					exit(-2);
 				}
 				imlib_context_set_color(c.r, c.g, c.b, c.a);
-				imlib_add_color_to_color_range(1);
+				imlib_add_color_to_color_range(arguments.distance[i]);
 			}
 		}
 		if (arguments.gradient) {
