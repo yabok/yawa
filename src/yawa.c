@@ -466,7 +466,7 @@ main(int argc, char **argv)
 		}
 
 		if (arguments.write) {
-			imlib_save_image(argv[i]);
+			imlib_save_image(arguments.write_file);
 		}
 
 		if (modifier != NULL) {

@@ -100,7 +100,7 @@ static struct argp_option options[] = {
 
 	{0,              0,          0, 0, "Misc:", -1},
 	{"alpha",      'A',   "AMOUNT", 0, "Adjust alpha level for colors and images", -1},
-	{"write",      'w', "FILENAME", 0, "Write the current image to a file", -1},          // Not implemented
+	{"write",      'w', "FILENAME", 0, "Write the current image to a file", -1},
 	{0,              0,          0, 0,                                   0,  0}
 };
 
