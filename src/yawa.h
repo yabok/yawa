@@ -15,6 +15,7 @@ typedef enum
 	Full, Fill, Center, Tile
 } ImageMode;
 
+
 /// Prototypes
 
 signed
