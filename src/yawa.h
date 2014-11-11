@@ -7,7 +7,7 @@
 
 typedef struct
 {
-	int r, g, b, a;
+	signed r, g, b, a;
 } Color;
 
 typedef enum
@@ -21,13 +21,13 @@ signed
 set_root_atoms(Pixmap pixmap);
 
 signed
-load_image(ImageMode mode, const char *arg, int rootW, int rootH,
-           int alpha, Imlib_Image rootimg);
+load_image(ImageMode mode, const char *arg, signed rootW, signed rootH,
+           signed alpha, Imlib_Image rootimg);
 
 
 /// Argument parsing
 
-static int num_add_colors;
+static signed num_add_colors;
 struct arguments {
 	char *image;
 	char *write_file;

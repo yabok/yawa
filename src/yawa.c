@@ -34,7 +34,7 @@
 
 // Order of parameters: KEY, ARG, STATE.
 static error_t
-parse_opt(int key, char *arg, struct argp_state *state)
+parse_opt(signed key, char *arg, struct argp_state *state)
 {
 	struct arguments *arguments = state->input;
 
@@ -151,14 +151,14 @@ static struct argp argp = {options, parse_opt, "", doc, NULL, NULL, 0};
 
 // Globals:
 static Display *display;
-static int screen;
+static signed screen;
 
 signed
 set_root_atoms(Pixmap pixmap)
 {
 	Atom atom_root, atom_eroot, type;
 	unsigned char *data_root, *data_eroot;
-	int format;
+	signed format;
 	unsigned long length, after;
 
 	atom_root = XInternAtom(display, "_XROOTMAP_ID", True);
@@ -199,10 +199,10 @@ set_root_atoms(Pixmap pixmap)
 }
 
 signed
-load_image(ImageMode mode, const char *arg, int rootW, int rootH,
-            int alpha, Imlib_Image rootimg)
+load_image(ImageMode mode, const char *arg, signed rootW, signed rootH,
+           signed alpha, Imlib_Image rootimg)
 {
-	int imgW, imgH, o;
+	signed imgW, imgH, o;
 	Imlib_Image buffer = imlib_load_image(arg);
 
 	if (!buffer) {
@@ -234,19 +234,19 @@ load_image(ImageMode mode, const char *arg, int rootW, int rootH,
 		                             0, 0, rootW, rootH);
 	} else if (mode == Full) {
 		double aspect = ((double) rootW) / imgW;
-		int top, left;
-		if ((int) (imgH * aspect) > rootH)
+		signed top, left;
+		if ((signed) (imgH * aspect) > rootH)
 			aspect = (double) rootH / (double) imgH;
-		top = (rootH - (int) (imgH * aspect)) / 2;
-		left = (rootW - (int) (imgW * aspect)) / 2;
+		top = (rootH - (signed) (imgH * aspect)) / 2;
+		left = (rootW - (signed) (imgW * aspect)) / 2;
 		imlib_blend_image_onto_image(buffer, 0, 0, 0, imgW, imgH,
-		                             left, top, (int) (imgW * aspect),
-		                             (int) (imgH * aspect));
+		                             left, top, (signed) (imgW * aspect),
+		                             (signed) (imgH * aspect));
 	} else {
-		int left = (rootW - imgW) / 2, top = (rootH - imgH) / 2;
+		signed left = (rootW - imgW) / 2, top = (rootH - imgH) / 2;
 
 		if (mode == Tile) {
-			int x, y;
+			signed x, y;
 			for (; left > 0; left -= imgW);
 			for (; top > 0; top -= imgH);
 
@@ -271,7 +271,7 @@ load_image(ImageMode mode, const char *arg, int rootW, int rootH,
 }
 
 signed
-main(int argc, char **argv)
+main(signed argc, char **argv)
 {
 	struct arguments arguments = {
 		"", "", {{0}}, "", "", 0, 0, 0, 0, 0, 0, 0,
@@ -289,8 +289,8 @@ main(int argc, char **argv)
 	Display *_display;
 	Imlib_Context *context;
 	Imlib_Image image;
-	int width, height, depth, alpha;
-	int i = 0;
+	signed width, height, depth, alpha;
+	signed i = 0;
 	Pixmap pixmap;
 	Imlib_Color_Modifier modifier = NULL;
 	_display = XOpenDisplay(NULL);
@@ -310,8 +310,8 @@ main(int argc, char **argv)
 
 		pixmap =
 			XCreatePixmap(display, RootWindow(display, screen),
-			              (unsigned int) width, (unsigned int) height,
-			              (unsigned int) depth);
+			              (unsigned) width, (unsigned) height,
+			              (unsigned) depth);
 
 		imlib_context_set_visual(vis);
 		imlib_context_set_colormap(cm);
@@ -396,7 +396,7 @@ main(int argc, char **argv)
 		if (arguments.tint) {
 			Color c;
 			DATA8 r[256], g[256], b[256], a[256];
-			int j;
+			signed j;
 
 			if (parse_color(arguments.tint_color, &c, 255) == 0) {
 				fprintf(stderr, "Bad color\n");

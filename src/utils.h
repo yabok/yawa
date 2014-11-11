@@ -14,6 +14,6 @@ double
 parse_double(char *string, char *arg);
 
 bool
-parse_color(char *arg, Color *c, int a);
+parse_color(char *hex, Color *color, signed alpha);
 
 #endif

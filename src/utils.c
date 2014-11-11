@@ -28,7 +28,7 @@ parse_int(char *string, char *arg)
 		fprintf(stderr, "Valid %s not found\n", arg);
 		exit(-2);
 	}
-	return (int)val;
+	return (signed)val;
 }
 
 unsigned
@@ -50,7 +50,7 @@ parse_uint(char *string, char *arg)
 		fprintf(stderr, "Valid %s not found\n", arg);
 		exit(-2);
 	}
-	return (unsigned int)val;
+	return (unsigned)val;
 }
 
 double
@@ -76,13 +76,13 @@ parse_double(char *string, char *arg)
 }
 
 bool
-parse_color(char *hex, Color *c, int a)
+parse_color(char *hex, Color *c, signed alpha)
 {
 	if ((strlen(hex) != 7) && (strlen(hex) != 9)) {
 		return false;
 	}
 
-	int len;
+	signed len;
 	if (strlen(hex) == 9) {
 		len = 4;
 	} else {
@@ -90,8 +90,8 @@ parse_color(char *hex, Color *c, int a)
 	}
 
 	hex++;
-	int colors[4];
-	for (int i = 0; i < len; hex += 2, i++) {
+	signed colors[4];
+	for (signed i = 0; i < len; hex += 2, i++) {
 		char color[3];
 		strlcpy(color, hex, 3);
 
@@ -107,7 +107,7 @@ parse_color(char *hex, Color *c, int a)
 			exit(-2);
 		}
 
-		colors[i] = (int)val;
+		colors[i] = (signed)val;
 	}
 
 	c->r = colors[0];
@@ -116,7 +116,7 @@ parse_color(char *hex, Color *c, int a)
 	if (len == 4) {
 		c->a = colors[3];
 	} else {
-		c->a = a;
+		c->a = alpha;
 	}
 
 	return true;
