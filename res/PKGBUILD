@@ -1,5 +1,5 @@
 pkgname=yawa-git
-pkgver=0.0.1.r0.g1f4c8ac
+pkgver=0.9.0
 pkgrel=1
 
 pkgdesc='A tool which allows you to compose wallpapers for X.'
@@ -26,6 +26,6 @@ build() {
 }
 
 package() {
-  cd yawa
-  make DESTDIR="$pkgdir" install
+	cd yawa
+	make DESTDIR="$pkgdir" install
 }
