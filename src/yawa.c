@@ -281,11 +281,11 @@ signed
 main(signed argc, char **argv)
 {
 	struct arguments arguments = {
-		0, 0, {{0}}, {0}, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		false, false, false, false, false, false,
-		false, false, false, false, false, false,
-		false, false, false, false, false, false,
-		false,
+		{{0}}, {0}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		false, false, false, false, false,
+		false, false, false, false, false,
+		false, false, false, false, false,
+		false, false, false, false,
 	};
 
 	for(unsigned long i = 0; i < (sizeof arguments.distance)/(sizeof (signed)); i++) {

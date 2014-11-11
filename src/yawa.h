@@ -30,46 +30,43 @@ load_image(ImageMode mode, const char *arg, signed rootW, signed rootH,
 static signed num_add_colors = 0;
 static signed num_distances = 0;
 struct arguments {
-	char *image;
-	char *write_file;
+	char     add_color[8][8];
+	signed   distance[8];
 
-	char   add_color[8][8];
-	signed distance[8];
+	char     *image,          *write_file,
+	         *solid_color,    *tint_color;
 
-	char *solid_color;
-	char *tint_color;
+	double   contrast_amount, brightness_amount;
+	double   gamma_amount;
 
 	signed   angle;
 	unsigned blur_radius;
 	unsigned sharpen_radius;
-	double   contrast_amount;
-	double   brightness_amount;
-	double   gamma_amount;
 	unsigned alpha_amount;
 
-	bool add: 1;
-	bool gradient: 1;
-	bool clear: 1;
+	bool add;
+	bool gradient;
+	bool clear;
 
-	bool solid: 1;
+	bool solid;
 
-	bool center: 1;
-	bool tile: 1;
-	bool full: 1;
+	bool center;
+	bool tile;
+	bool full: 4;
 	bool fill: 1;
 
-	bool tint;
-	bool blur;
-	bool sharpen;
-	bool contrast;
-	bool brightness;
-	bool gamma;
-	bool flipv;
-	bool fliph;
-	bool flipd;
+	bool tint: 1;
+	bool blur: 1;
+	bool sharpen: 1;
+	bool contrast: 1;
+	bool brightness: 1;
+	bool gamma: 1;
+	bool flipv: 1;
+	bool fliph: 1;
+	bool flipd: 1;
 
-	bool alpha;
-	bool write;
+	bool alpha: 1;
+	bool write: 1;
 };
 
 // Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}.
