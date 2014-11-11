@@ -76,7 +76,7 @@ struct arguments {
 static struct argp_option options[] = {
 	{0,              0,          0, 0, "Gradients:", 1},
 	{"add",        'a',    "COLOR", 0, "Add color to range", 1},
-	{"distance",   'D', "DISTANCE", 0, "Distance to use for adding color to range. "
+	{"distance",   'd', "DISTANCE", 0, "Distance to use for adding color to range. "
 	                                   "Defaults to 1 for each color", 1},
 	{"gradient",   'g',    "ANGLE", 0, "Render gradient using specified angle", 1},
 	{"clear",      'c',          0, 0, "Clear the color range", 1},
@@ -97,9 +97,9 @@ static struct argp_option options[] = {
 	{"contrast",   'o',   "AMOUNT", 0, "Adjust the contrast of the current image", 4},
 	{"brightness", 'B',   "AMOUNT", 0, "Adjust the bightness of the current image", 4},
 	{"gamma",      'G',   "AMOUNT", 0, "Adjust the gamma level of the current image", 4},
-	{"flipv",      'v',          0, 0, "Flip the current image vertically", 4},
-	{"fliph",      'h',          0, 0, "Flip the current image horizontally", 4},
-	{"flipd",      'd',          0, 0, "Flip the current image diagonally", 4},
+	{"flipv",        1,          0, 0, "Flip the current image vertically", 4},
+	{"fliph",        2,          0, 0, "Flip the current image horizontally", 4},
+	{"flipd",        3,          0, 0, "Flip the current image diagonally", 4},
 
 	{0,              0,          0, 0, "Misc:", -1},
 	{"alpha",      'A',   "AMOUNT", 0, "Adjust alpha level for colors and images", -1},

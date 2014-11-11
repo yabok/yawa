@@ -46,7 +46,7 @@ parse_opt(signed key, char *arg, struct argp_state *state)
 			num_add_colors += 1;
 			break;
 
-		case 'D':
+		case 'd':
 			;
 			signed distance = parse_int(arg, "add distance");
 			arguments->distance[num_distances] = distance;
@@ -120,15 +120,15 @@ parse_opt(signed key, char *arg, struct argp_state *state)
 			arguments->gamma_amount = parse_double(arg, "gamma amount");
 			break;
 
-		case 'v':
+		case 1:
 			arguments->flipv = true;
 			break;
 
-		case 'h':
+		case 2:
 			arguments->fliph = true;
 			break;
 
-		case 'd':
+		case 3:
 			arguments->flipd = true;
 			break;
 
