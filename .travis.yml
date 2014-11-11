@@ -7,7 +7,7 @@ script:
 
 install:
     - sudo apt-get update -qq
-    - sudo apt-get install -y libx11-dev libimlib2-dev libbsd-dev
+    - sudo apt-get install -y libx11-dev libimlib2-dev libbsd-dev python3-sphinx
 
 env:
   global:
