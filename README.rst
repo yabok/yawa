@@ -1,6 +1,9 @@
-======
- yawa
-======
+===============
+ yawa |travis|
+===============
+.. |travis| image:: https://travis-ci.org/kyrias/yawa.svg?branch=coverity_scan
+   :alt: Travis Build Status
+   :target: https://travis-ci.org/kyrias/yawa
 -----------------------------------
  Yet another wallpaper application
 -----------------------------------
