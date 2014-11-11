@@ -10,7 +10,7 @@
 #include "utils.h"
 
 signed
-parse_int(char *string, char *arg)
+parse_int(char *string, const char *arg)
 {
 	errno = 0;
 	char *endptr;
@@ -32,7 +32,7 @@ parse_int(char *string, char *arg)
 }
 
 unsigned
-parse_uint(char *string, char *arg)
+parse_uint(char *string, const char *arg)
 {
 	errno = 0;
 	char *endptr;
@@ -54,7 +54,7 @@ parse_uint(char *string, char *arg)
 }
 
 double
-parse_double(char *string, char *arg)
+parse_double(char *string, const char *arg)
 {
 	errno = 0;
 	char *endptr;
