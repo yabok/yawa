@@ -7,3 +7,5 @@ add_custom_target(man ALL
 	"${CMAKE_CURRENT_SOURCE_DIR}"
 	COMMENT "Building man page with Sphinx"
 )
+
+INSTALL(FILES "yawa.1" DESTINATION "share/man/man1")
