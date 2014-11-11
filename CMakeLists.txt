@@ -13,7 +13,7 @@ if(EXISTS ".git/")
 		set(PACKAGE_VERSION ${GIT_VERSION})
 	endif()
 else()
-	set(PACKAGE_VERSION "0.0.1")
+	set(PACKAGE_VERSION "0.9.0")
 endif()
 
 set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
