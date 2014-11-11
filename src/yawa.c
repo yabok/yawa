@@ -281,7 +281,7 @@ signed
 main(signed argc, char **argv)
 {
 	struct arguments arguments = {
-		"", "", {{0}}, {0}, "", "", 0, 0, 0, 0, 0, 0, 0,
+		0, 0, {{0}}, {0}, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		false, false, false, false, false, false,
 		false, false, false, false, false, false,
 		false, false, false, false, false, false,
