@@ -29,7 +29,7 @@ configure_file(
 )
 
 set(CMAKE_C_COMPILER "clang")
-set(CMAKE_C_FLAGS    "-Weverything -std=c11")
+set(CMAKE_C_FLAGS    "-Weverything ${CMAKE_C_FLAGS}")
 set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
