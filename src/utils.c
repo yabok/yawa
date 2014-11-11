@@ -53,6 +53,28 @@ parse_uint(char *string, char *arg)
 	return (unsigned int)val;
 }
 
+double
+parse_double(char *string, char *arg)
+{
+	errno = 0;
+	char *endptr;
+	double val = strtod(string, &endptr);
+	if (errno != 0) {
+		char *errormsg;
+		asprintf(&errormsg, "parse_double: failed to parse %s", arg);
+
+		perror(errormsg);
+		free(errormsg);
+		exit(-2);
+	}
+
+	if (endptr == string) {
+		fprintf(stderr, "Valid %s not found\n", arg);
+		exit(-2);
+	}
+	return val;
+}
+
 bool
 parse_color(char *hex, Color *c, int a)
 {
