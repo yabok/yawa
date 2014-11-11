@@ -100,17 +100,17 @@ parse_opt(signed key, char *arg, struct argp_state *state)
 
 		case 'o':
 			arguments->contrast = true;
-			arguments->contrast_amount = parse_uint(arg, "contrast amount");
+			arguments->contrast_amount = parse_double(arg, "contrast amount");
 			break;
 
 		case 'B':
 			arguments->brightness = true;
-			arguments->brightness_amount = parse_uint(arg, "brightness amount");
+			arguments->brightness_amount = parse_double(arg, "brightness amount");
 			break;
 
 		case 'G':
 			arguments->gamma = true;
-			arguments->gamma_amount = parse_uint(arg, "gamma amount");
+			arguments->gamma_amount = parse_double(arg, "gamma amount");
 			break;
 
 		case 'v':
@@ -328,7 +328,7 @@ main(signed argc, char **argv)
 		imlib_context_set_blend(1);
 
 		if (arguments.alpha) {
-			alpha = arguments.alpha;
+			alpha = (signed)arguments.alpha_amount;
 		} else {
 			alpha = 255;
 		}
@@ -414,45 +414,19 @@ main(signed argc, char **argv)
 			imlib_set_color_modifier_tables(r, g, b, a);
 		}
 		if (arguments.blur) {
-			int intval;
-			if (sscanf(argv[i], "%i", &intval) == 0) {
-				fprintf(stderr, "Bad value (%s)\n", argv[i]);
-				continue;
-			}
-
-			imlib_image_blur(intval);
+			imlib_image_blur((signed)arguments.blur_radius);
 		}
 		if (arguments.sharpen) {
-			int intval;
-			if (sscanf(argv[i], "%i", &intval) == 0) {
-				fprintf(stderr, "Bad value (%s)\n", argv[i]);
-				continue;
-			}
-			imlib_image_sharpen(intval);
+			imlib_image_sharpen((signed)arguments.sharpen_radius);
 		}
 		if (arguments.contrast) {
-			double dblval;
-			if (sscanf(argv[i], "%lf", &dblval) == 0) {
-				fprintf(stderr, "Bad value (%s)\n", argv[i]);
-				continue;
-			}
-			imlib_modify_color_modifier_contrast(dblval);
+			imlib_modify_color_modifier_contrast(arguments.contrast_amount);
 		}
 		if (arguments.brightness) {
-			double dblval;
-			if (sscanf(argv[i], "%lf", &dblval) == 0) {
-				fprintf(stderr, "Bad value (%s)\n", argv[i]);
-				continue;
-			}
-			imlib_modify_color_modifier_brightness(dblval);
+			imlib_modify_color_modifier_brightness(arguments.brightness_amount);
 		}
 		if (arguments.gamma) {
-			double dblval;
-			if (sscanf(argv[i], "%lf", &dblval) == 0) {
-				fprintf(stderr, "Bad value (%s)\n", argv[i]);
-				continue;
-			}
-			imlib_modify_color_modifier_gamma(dblval);
+			imlib_modify_color_modifier_gamma(arguments.gamma_amount);
 		}
 
 		if (arguments.flipv) {

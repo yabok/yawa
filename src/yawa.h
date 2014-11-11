@@ -40,9 +40,9 @@ struct arguments {
 	signed   angle;
 	unsigned blur_radius;
 	unsigned sharpen_radius;
-	unsigned contrast_amount;
-	unsigned brightness_amount;
-	unsigned gamma_amount;
+	double   contrast_amount;
+	double   brightness_amount;
+	double   gamma_amount;
 	unsigned alpha_amount;
 
 	bool add: 1;
@@ -89,11 +89,11 @@ static struct argp_option options[] = {
 
 	{0,              0,          0, 0, "Manipulations:", 4},
 	{"tint",       'T',    "COLOR", 0, "Tint current image", 4},
-	{"blur",       'b',   "RADIUS", 0, "Blur the current image", 4},                      // Not implemented
-	{"sharpen",    'S',   "RADIUS", 0, "Sharpen the current image", 4},                   // Not implemented
-	{"contrast",   'o',   "AMOUNT", 0, "Adjust the contrast of the current image", 4},    // Not implemented
-	{"brightness", 'B',   "AMOUNT", 0, "Adjust the bightness of the current image", 4},   // Not implemented
-	{"gamma",      'G',   "AMOUNT", 0, "Adjust the gamma level of the current image", 4}, // Not implemented
+	{"blur",       'b',   "RADIUS", 0, "Blur the current image", 4},
+	{"sharpen",    'S',   "RADIUS", 0, "Sharpen the current image", 4},
+	{"contrast",   'o',   "AMOUNT", 0, "Adjust the contrast of the current image", 4},
+	{"brightness", 'B',   "AMOUNT", 0, "Adjust the bightness of the current image", 4},
+	{"gamma",      'G',   "AMOUNT", 0, "Adjust the gamma level of the current image", 4},
 	{"flipv",      'v',          0, 0, "Flip the current image vertically", 4},
 	{"fliph",      'h',          0, 0, "Flip the current image horizontally", 4},
 	{"flipd",      'd',          0, 0, "Flip the current image diagonally", 4},
