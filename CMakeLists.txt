@@ -31,7 +31,7 @@ set(CMAKE_C_FLAGS "-Weverything -fstack-protector-all -fPIE ${CMAKE_C_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,-z,relro -Wl,-z,now -pie ${CMAKE_EXE_LINKER_FLAG}")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-add_subdirectory("src")
-
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+add_subdirectory("src")
 add_subdirectory("doc")
