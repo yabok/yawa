@@ -16,6 +16,7 @@ So here is yawa with rewritten option parsing using glibc’s argp, all
 warnings fixed and more argument checking, and hopefully also more
 readable. (God I don’t know how upstream fucked the formating up so badly)
 
+
 Dependencies
 ============
 
@@ -27,6 +28,7 @@ Dependencies
 
 .. _libbsd: http://libbsd.freedesktop.org/
 
+
 Building
 ========
 ::
@@ -35,3 +37,11 @@ Building
     cmake -g 'Unix Makefiles' .
     make
     sudo make install
+
+
+License
+=======
+
+Every file in this repository, except for as otherwise specified in the file
+itself or in this README if not possible, is licensed under version 2 of the
+GNU GPL license
