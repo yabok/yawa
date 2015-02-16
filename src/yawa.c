@@ -305,6 +305,10 @@ main(signed argc, char **argv)
 	Pixmap pixmap;
 	Imlib_Color_Modifier modifier = NULL;
 	_display = XOpenDisplay(NULL);
+	if (!_display) {
+		fprintf(stderr, "X display could not be opened\n");
+		exit(1);
+	}
 
 	for (screen = 0; screen < ScreenCount(_display); screen++) {
 		display = XOpenDisplay(NULL);
