@@ -41,6 +41,13 @@ Building
     sudo make install
 
 
+Debugging
+=========
+
+When trying to debug yawa, run the `cmake` command with the
+`-DCMAKE_BUILD_TYPE=DEBUG` arguments so that the binary is built with debug
+symbols for meaningful backtraces.
+
 License
 =======
 
