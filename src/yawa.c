@@ -359,7 +359,7 @@ main(signed argc, char **argv)
 			Color c;
 			if (parse_color(arguments.solid_color, &c, alpha) == 0) {
 				fprintf(stderr, "Bad color (%s)\n", arguments.solid_color);
-				exit(-2);
+				exit(2);
 			}
 			imlib_context_set_color(c.r, c.g, c.b, c.a);
 			imlib_image_fill_rectangle(0, 0, width, height);
@@ -373,7 +373,7 @@ main(signed argc, char **argv)
 				Color c;
 				if (parse_color(arguments.add_color[i], &c, alpha) == 0) {
 					fprintf(stderr, "Bad color (%s)\n", arguments.add_color[i]);
-					exit(-2);
+					exit(2);
 				}
 				imlib_context_set_color(c.r, c.g, c.b, c.a);
 				imlib_add_color_to_color_range(arguments.distance[i]);
@@ -414,7 +414,7 @@ main(signed argc, char **argv)
 
 			if (parse_color(arguments.tint_color, &c, 255) == 0) {
 				fprintf(stderr, "Bad color\n");
-				exit(-2);
+				exit(2);
 			}
 
 			imlib_get_color_modifier_tables(r, g, b, a);
