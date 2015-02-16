@@ -34,7 +34,9 @@ Building
 ::
 
     <git clone>
-    cmake -g 'Unix Makefiles' .
+    mkdir yasl/build
+    cd yasl/build
+    cmake ..
     make
     sudo make install
 
