@@ -11,14 +11,14 @@ install:
 
 env:
   global:
-   - secure: "Hf1xjFClKIhsv4o4HqAs8pAqKdauJ3TItMH1uqc0qaPRmh0bFhNs0pwwjhmMjnLrbRrRcnfjwEyuXz3wZysiegSedm/tE0NyMFQql+rjgicmTQj73BMzrIDadQ8jMNaeD44YVDlFknv0ren9/LmSFzYLuI8zjAtIyeKxN++IujE="
+    - secure: "kxg+hW70OZ0m/3BMrv3Wp5CAdLJrLv45v/QG/SHYjl2cI6kezucgxFTIpHBO/6qaOIPRhX407zbTDyUHRQbHcfi0wO9D9YEEYeawZRwsUlQlQVjztKnwQ5Y7fVDP6/0DhX/dFx++M51McPQlPcui2rIcw9vqPKgbcO8dKAUb4Bw="
 
 addons:
   coverity_scan:
     project:
-      name: "kyrias/yawa"
+      name: "yabok/yawa"
       description: "Build submitted via Travis CI"
-    notification_email: johannes@kyriasis.com
+    notification_email: yawa@kyriasis.com
     build_command_prepend: cov-configure --template --comptype clangcc --compiler clang; cmake .
     build_command: make
     branch_pattern: coverity_scan
