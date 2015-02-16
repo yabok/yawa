@@ -28,6 +28,7 @@ configure_file(
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_C_FLAGS "-Weverything -fstack-protector-all -fPIE ${CMAKE_C_FLAGS}")
+set(CMAKE_C_FLAGS_DEBUG "-ggdb")
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,-z,relro -Wl,-z,now -pie ${CMAKE_EXE_LINKER_FLAG}")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
