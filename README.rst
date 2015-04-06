@@ -34,8 +34,8 @@ Building
 ::
 
     <git clone>
-    mkdir yasl/build
-    cd yasl/build
+    mkdir yawa/build
+    cd yawa/build
     cmake ..
     make
     sudo make install
