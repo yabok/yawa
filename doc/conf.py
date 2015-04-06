@@ -11,5 +11,5 @@ source_suffix = '.rst'
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('yawa', 'yawa', 'Yet Another Wallpaper Application',
-     ['Johannes Löthberg'], 1)
+     [u'Johannes Löthberg'], 1)
 ]
