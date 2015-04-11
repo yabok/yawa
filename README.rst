@@ -1,9 +1,11 @@
 ===============
  yawa |travis|
 ===============
-.. |travis| image:: https://travis-ci.org/yabok/yawa.svg
+
+.. |travis| image:: https://img.shields.io/travis/yabok/yawa.svg?style=flat-square
    :alt: Travis Build Status
    :target: https://travis-ci.org/yabok/yawa
+
 -----------------------------------
  Yet another wallpaper application
 -----------------------------------
