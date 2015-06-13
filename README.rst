@@ -25,6 +25,7 @@ Dependencies
 * glibc (argp argument parsing)
 * imlib2
 * libx11
+* clang
 * libbsd_ (strlcpy)
 * sphinx (man page)
 
