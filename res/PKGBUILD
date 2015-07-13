@@ -1,5 +1,5 @@
 pkgname=yawa-git
-pkgver=0.9.0
+pkgver=0.9.0.r18.g31af564
 pkgrel=1
 
 pkgdesc='A tool which allows you to compose wallpapers for X.'
@@ -8,7 +8,7 @@ arch=('i686' 'x86_64')
 license=('GPL2')
 
 depends=('imlib2' 'libx11' 'libbsd')
-makedepends=('cmake' 'git' 'python-sphinx')
+makedepends=('clang' 'cmake' 'git' 'python-sphinx')
 
 source=('git+http://git.kyriasis.com/kyrias/yawa')
 
