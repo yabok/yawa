@@ -70,21 +70,21 @@ struct arguments {
 
 	bool center;
 	bool tile;
-	bool full: 4;
-	bool fill: 1;
+	bool full;
+	bool fill;
 
-	bool tint: 1;
-	bool blur: 1;
-	bool sharpen: 1;
-	bool contrast: 1;
-	bool brightness: 1;
-	bool gamma: 1;
-	bool flipv: 1;
-	bool fliph: 1;
-	bool flipd: 1;
+	bool tint;
+	bool blur;
+	bool sharpen;
+	bool contrast;
+	bool brightness;
+	bool gamma;
+	bool flipv;
+	bool fliph;
+	bool flipd;
 
-	bool alpha: 1;
-	bool write: 1;
+	bool alpha;
+	bool write;
 };
 
 // Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}.
